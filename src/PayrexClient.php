@@ -44,7 +44,7 @@ use Throwable;
  */
 final class PayrexClient
 {
-    public const VERSION = '0.1.0';
+    public const VERSION = '0.2.0';
 
     /** @var array<class-string, object> */
     private array $resources = [];
