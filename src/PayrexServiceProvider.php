@@ -12,6 +12,7 @@ use ByRcsc\LaravelPayrex\Commands\WebhookToggleCommand;
 use ByRcsc\LaravelPayrex\Commands\WebhookUpdateCommand;
 use ByRcsc\LaravelPayrex\Support\Payload;
 use ByRcsc\LaravelPayrex\Support\WebhookEventMap;
+use ByRcsc\LaravelPayrex\Support\WebhookSignature;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Client\Factory as HttpFactory;
 use Spatie\LaravelPackageTools\Package;
@@ -53,7 +54,7 @@ final class PayrexServiceProvider extends PackageServiceProvider
                 connectTimeout: Payload::int($config, 'connect_timeout', 10),
                 retryTimes: Payload::int($retry, 'times', 1),
                 retrySleep: Payload::int($retry, 'sleep', 200),
-                webhookTolerance: Payload::int($webhooks, 'tolerance', 300),
+                webhookTolerance: Payload::int($webhooks, 'tolerance', WebhookSignature::DEFAULT_TOLERANCE),
             );
         });
 

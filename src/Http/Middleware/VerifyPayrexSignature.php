@@ -39,7 +39,7 @@ final class VerifyPayrexSignature
             payload: $payload,
             header: $request->header(Payload::string($webhooks, 'header', 'Payrex-Signature')),
             secret: Payload::string($payrex, 'webhook_secret'),
-            tolerance: Payload::int($webhooks, 'tolerance', 300),
+            tolerance: Payload::int($webhooks, 'tolerance', WebhookSignature::DEFAULT_TOLERANCE),
         );
 
         return $next($request);

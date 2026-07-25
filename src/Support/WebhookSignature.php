@@ -19,9 +19,24 @@ final class WebhookSignature
     private const ALGORITHM = 'sha256';
 
     /**
+     * How stale a delivery may be before it is rejected.
+     *
+     * Five minutes is only safe because PayRex re-signs every retry with a
+     * fresh timestamp, so a stale delivery is never a legitimate retry being
+     * turned away. Were the original header replayed instead, this window would
+     * drop the event for good: a rejection answers 400, which earns another
+     * equally stale retry. If that ever changes, widen this to cover PayRex's
+     * three-day retry period.
+     *
+     * It is not the replay defence: HMAC already prevents forgery, so listeners
+     * must be idempotent on event ID regardless.
+     */
+    public const DEFAULT_TOLERANCE = 300;
+
+    /**
      * Both the `te` and `li` slots are always tried. Which one is populated is
      * knowable only from the payload, and the payload is not trustworthy until
-     * this method has returned — so nothing here branches on it. Only the
+     * this method has returned - so nothing here branches on it. Only the
      * configured secret decides what verifies, and a test-mode secret cannot
      * produce a live-mode signature regardless of which slot carries it.
      *
@@ -34,7 +49,7 @@ final class WebhookSignature
         string $payload,
         ?string $header,
         string $secret,
-        int $tolerance = 300,
+        int $tolerance = self::DEFAULT_TOLERANCE,
         ?int $now = null,
     ): void {
         if ($secret === '') {
@@ -76,7 +91,7 @@ final class WebhookSignature
             /*
              * Only staleness is rejected. A timestamp in the future means
              * PayRex's clock runs ahead of ours, which is a clock-sync problem
-             * rather than a replay — and rejecting it would drop deliveries
+             * rather than a replay - and rejecting it would drop deliveries
              * this package has no way to ask PayRex to resend.
              */
             $age = ($now ?? time()) - (int) $timestamp;
@@ -100,7 +115,7 @@ final class WebhookSignature
     }
 
     /**
-     * The expected signature for a payload — the value PayRex puts in `te`/`li`.
+     * The expected signature for a payload - the value PayRex puts in `te`/`li`.
      */
     public static function sign(string $payload, string $secret, int $timestamp): string
     {

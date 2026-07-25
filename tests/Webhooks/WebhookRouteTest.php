@@ -136,7 +136,7 @@ it('does not let the unverified body decide which signature slot is checked', fu
     $event['livemode'] = true;
 
     // Signed into the test-mode slot while the body claims live mode. Only the
-    // configured secret decides what verifies, so this is accepted — and a
+    // configured secret decides what verifies, so this is accepted - and a
     // live-mode secret still cannot be forged from a test-mode one.
     postWebhook($event)->assertOk();
 
