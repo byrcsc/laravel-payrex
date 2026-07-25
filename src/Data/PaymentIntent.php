@@ -12,7 +12,7 @@ use Carbon\CarbonImmutable;
 /**
  * An intent to collect a specific amount from a payer.
  *
- * All money is expressed in the currency's smallest unit — centavos for PHP,
+ * All money is expressed in the currency's smallest unit - centavos for PHP,
  * so `amount: 10000` is ₱100.00.
  */
 final readonly class PaymentIntent
@@ -27,7 +27,7 @@ final readonly class PaymentIntent
      */
     public function __construct(
         public string $id,
-        public int $amount = 0,
+        public ?int $amount = null,
         public ?int $amountReceived = null,
         public ?int $amountCapturable = null,
         public ?Currency $currency = null,
@@ -36,13 +36,14 @@ final readonly class PaymentIntent
         public ?string $description = null,
         public ?string $returnUrl = null,
         public ?string $statementDescriptor = null,
-        public bool $livemode = false,
+        public ?bool $livemode = null,
         public array $paymentMethods = [],
         public array $paymentMethodOptions = [],
         public ?array $nextAction = null,
         public ?array $lastPaymentError = null,
         public ?Payment $latestPayment = null,
         public ?string $paymentMethodId = null,
+        public ?string $merchantId = null,
         public ?Customer $customer = null,
         public array $metadata = [],
         public ?CarbonImmutable $captureBeforeAt = null,
@@ -61,7 +62,7 @@ final readonly class PaymentIntent
 
         return new self(
             id: Payload::string($data, 'id'),
-            amount: Payload::int($data, 'amount'),
+            amount: Payload::nullableInt($data, 'amount'),
             amountReceived: Payload::nullableInt($data, 'amount_received'),
             amountCapturable: Payload::nullableInt($data, 'amount_capturable'),
             currency: Payload::enum($data, 'currency', Currency::class),
@@ -70,13 +71,14 @@ final readonly class PaymentIntent
             description: Payload::nullableString($data, 'description'),
             returnUrl: Payload::nullableString($data, 'return_url'),
             statementDescriptor: Payload::nullableString($data, 'statement_descriptor'),
-            livemode: Payload::bool($data, 'livemode'),
+            livemode: Payload::nullableBool($data, 'livemode'),
             paymentMethods: Payload::strings($data, 'payment_methods'),
             paymentMethodOptions: Payload::object($data, 'payment_method_options') ?? [],
             nextAction: Payload::object($data, 'next_action'),
             lastPaymentError: Payload::object($data, 'last_payment_error'),
             latestPayment: $latestPayment === null ? null : Payment::from($latestPayment),
             paymentMethodId: Payload::nullableString($data, 'payment_method_id'),
+            merchantId: Payload::nullableString($data, 'merchant_id'),
             customer: $customer === null ? null : Customer::from($customer),
             metadata: Payload::metadata($data),
             captureBeforeAt: Payload::dateTime($data, 'capture_before_at'),
@@ -92,8 +94,8 @@ final readonly class PaymentIntent
     }
 
     /**
-     * Whether the payer still has to be sent somewhere — a bank redirect or an
-     * e-wallet approval screen — before this intent can settle.
+     * Whether the payer still has to be sent somewhere - a bank redirect or an
+     * e-wallet approval screen - before this intent can settle.
      */
     public function requiresAction(): bool
     {

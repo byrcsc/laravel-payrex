@@ -1,12 +1,12 @@
 {
     "resource": "customer",
     "id": "cus_3QxSample000001",
-    "name": "Ada Lovelace",
-    "email": "ada@example.test",
+    "name": "Joe Dela Cruz",
+    "email": "joe@example.test",
     "currency": "PHP",
     "billing": {
-        "name": "Ada Lovelace",
-        "email": "ada@example.test",
+        "name": "Joe Dela Cruz",
+        "email": "joe@example.test",
         "phone": "+639171234567",
         "address": {
             "line1": "12 Analytical Engine Street",

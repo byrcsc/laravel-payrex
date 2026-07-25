@@ -42,7 +42,7 @@ use Illuminate\Support\Str;
  * One fixture per DTO, hydrated and asserted field by field.
  *
  * The DTOs read every value through `Payload`, which degrades to a default
- * rather than throwing — so a renamed or retyped field does not blow up, it
+ * rather than throwing - so a renamed or retyped field does not blow up, it
  * quietly turns into null. These tests are what turns that silence into a
  * failure when a fixture is updated to match a changed API response.
  */
@@ -72,15 +72,15 @@ describe('Billing', function () {
     it('maps every field and nests the address', function () {
         $billing = Billing::from(payload('billing'));
 
-        expect($billing->name)->toBe('Ada Lovelace')
-            ->and($billing->email)->toBe('ada@example.test')
+        expect($billing->name)->toBe('Joe Dela Cruz')
+            ->and($billing->email)->toBe('joe@example.test')
             ->and($billing->phone)->toBe('+639171234567')
             ->and($billing->address)->toBeInstanceOf(BillingAddress::class)
             ->and($billing->address?->city)->toBe('Makati');
     });
 
     it('leaves the address null when the payload carries none', function () {
-        expect(Billing::from(['name' => 'Ada'])->address)->toBeNull();
+        expect(Billing::from(['name' => 'Joe'])->address)->toBeNull();
     });
 });
 
@@ -89,8 +89,8 @@ describe('Customer', function () {
         $customer = Customer::from(payload('customer'));
 
         expect($customer->id)->toBe('cus_3QxSample000001')
-            ->and($customer->name)->toBe('Ada Lovelace')
-            ->and($customer->email)->toBe('ada@example.test')
+            ->and($customer->name)->toBe('Joe Dela Cruz')
+            ->and($customer->email)->toBe('joe@example.test')
             ->and($customer->currency)->toBe(Currency::PHP)
             ->and($customer->billing?->address?->country)->toBe('PH')
             ->and($customer->billingStatementPrefix)->toBe('ACME')
@@ -101,10 +101,11 @@ describe('Customer', function () {
             ->and($customer->updatedAt?->getTimestamp())->toBe(1753420860);
     });
 
-    it('also accepts billing under the billing_details key', function () {
-        $customer = Customer::from(['id' => 'cus_1', 'billing_details' => ['name' => 'Ada']]);
-
-        expect($customer->billing?->name)->toBe('Ada');
+    it('reads billing from the billing key only', function () {
+        expect(Customer::from(['id' => 'cus_1', 'billing' => ['name' => 'Joe']])->billing?->name)
+            ->toBe('Joe')
+            ->and(Customer::from(['id' => 'cus_1', 'billing_details' => ['name' => 'Joe']])->billing)
+            ->toBeNull();
     });
 });
 
@@ -114,7 +115,7 @@ describe('PaymentMethod', function () {
 
         expect($method->id)->toBe('pm_3QxSample000004')
             ->and($method->type)->toBe(PaymentMethodType::Card)
-            ->and($method->billingDetails?->name)->toBe('Ada Lovelace')
+            ->and($method->billingDetails?->name)->toBe('Joe Dela Cruz')
             ->and($method->allowRedisplay)->toBe('always')
             ->and($method->livemode)->toBeFalse()
             ->and($method->metadata)->toBe(['source' => 'checkout'])
@@ -146,7 +147,7 @@ describe('PaymentMethodSummary', function () {
 
         expect($summary->type)->toBe(PaymentMethodType::Gcash)
             ->and($summary->details)->toBe([
-                'account_name' => 'Ada Lovelace',
+                'account_name' => 'Joe Dela Cruz',
                 'account_number' => '09171234567',
             ]);
     });
@@ -167,7 +168,7 @@ describe('PaymentIntent', function () {
             ->and($intent->currency)->toBe(Currency::PHP)
             ->and($intent->status)->toBe(PaymentIntentStatus::AwaitingPaymentMethod)
             ->and($intent->clientSecret)->toBe('pi_3QxSample000001_secret_abc123')
-            ->and($intent->description)->toBe('Order #1234')
+            ->and($intent->description)->toBe('Mar 1 - Apr 1, 2026')
             ->and($intent->statementDescriptor)->toBe('ACME STORE')
             ->and($intent->paymentMethods)->toBe(['card', 'gcash'])
             ->and($intent->paymentMethodOptions)->toBe(['card' => ['capture_type' => 'automatic']])
@@ -206,11 +207,11 @@ describe('Payment', function () {
             ->and($payment->netAmount)->toBe(9650)
             ->and($payment->currency)->toBe(Currency::PHP)
             ->and($payment->status)->toBe(PaymentStatus::Paid)
-            ->and($payment->description)->toBe('Order #1234')
+            ->and($payment->description)->toBe('Mar 1 - Apr 1, 2026')
             ->and($payment->paymentIntentId)->toBe('pi_3QxSample000001')
             ->and($payment->origin)->toBe('checkout_session')
             ->and($payment->refunded)->toBeFalse()
-            ->and($payment->billing?->name)->toBe('Ada Lovelace')
+            ->and($payment->billing?->name)->toBe('Joe Dela Cruz')
             ->and($payment->customer)->toBeInstanceOf(Customer::class)
             ->and($payment->customer?->id)->toBe('cus_3QxSample000001')
             ->and($payment->paymentMethod)->toBeInstanceOf(PaymentMethodSummary::class)
@@ -218,6 +219,38 @@ describe('Payment', function () {
             ->and($payment->pageSession)->toHaveKey('id')
             ->and($payment->metadata)->toBe(['order_id' => '1234'])
             ->and($payment->updatedAt?->getTimestamp())->toBe(1753420860);
+    });
+
+    it('maps every field of a completed payment', function () {
+        $payment = Payment::from(payload('payment_paid'));
+
+        expect($payment->status)->toBe(PaymentStatus::Paid)
+            ->and($payment->amount)->toBe(155000)
+            ->and($payment->fee)->toBe(3565)
+            ->and($payment->netAmount)->toBe(150252)
+            ->and($payment->origin)->toBe('api')
+            ->and($payment->refunded)->toBeFalse()
+            ->and($payment->paymentMethod?->type)->toBe(PaymentMethodType::Gcash)
+            ->and($payment->billing?->name)->toBe('Joe Dela Cruz');
+    });
+
+    it('reads the consolidated amount and status', function () {
+        $payment = Payment::from(payload('payment_paid'));
+
+        expect($payment->consolidatedNetAmount)->toBe(150252)
+            ->and($payment->consolidatedStatus)->toBe('paid');
+    });
+
+    it('has exactly the paid and failed statuses', function () {
+        expect(array_map(fn (PaymentStatus $case): string => $case->value, PaymentStatus::cases()))
+            ->toBe(['paid', 'failed']);
+    });
+
+    it('leaves an unmodelled status null and keeps the literal on raw', function () {
+        $payment = Payment::from([...payload('payment_paid'), 'status' => 'pending']);
+
+        expect($payment->status)->toBeNull()
+            ->and($payment->raw['status'])->toBe('pending');
     });
 });
 
@@ -231,8 +264,8 @@ describe('Refund', function () {
             ->and($refund->status)->toBe(RefundStatus::Succeeded)
             ->and($refund->reason)->toBe(RefundReason::RequestedByCustomer)
             ->and($refund->paymentId)->toBe('pay_3QxSample000002')
-            ->and($refund->description)->toBe('Partial refund for order #1234')
-            ->and($refund->remarks)->toBe('Customer changed their mind about one item.')
+            ->and($refund->description)->toBe('Partial refund for two seats')
+            ->and($refund->remarks)->toBe('Removed two seats mid-cycle.')
             ->and($refund->metadata)->toBe(['ticket_id' => 'SUP-77'])
             ->and($refund->createdAt?->getTimestamp())->toBe(1753420800);
     });
@@ -245,7 +278,7 @@ describe('SetupIntent', function () {
         expect($intent->id)->toBe('seti_3QxSample000005')
             ->and($intent->status)->toBe(SetupIntentStatus::AwaitingNextAction)
             ->and($intent->clientSecret)->toBe('seti_3QxSample000005_secret_xyz789')
-            ->and($intent->description)->toBe('Save a card for later')
+            ->and($intent->description)->toBe('Save a card for renewals')
             ->and($intent->returnUrl)->toBe('https://shop.test/setup/complete')
             ->and($intent->usage)->toBe('off_session')
             ->and($intent->paymentMethods)->toBe(['card'])
@@ -261,12 +294,13 @@ describe('CheckoutSession', function () {
         $session = CheckoutSession::from(payload('checkout_session'));
 
         expect($session->id)->toBe('cs_3QxSample000006')
-            ->and($session->amount)->toBe(25000)
+            ->and($session->amount)->toBeNull()
+            ->and($session->customerId)->toBe('cus_3QxSample000001')
             ->and($session->url)->toBe('https://pay.payrexhq.test/cs_3QxSample000006')
             ->and($session->status)->toBe(CheckoutSessionStatus::Active)
             ->and($session->currency)->toBe(Currency::PHP)
             ->and($session->lineItems)->toHaveCount(2)
-            ->and($session->lineItems[0]['name'])->toBe('Difference Engine')
+            ->and($session->lineItems[0]['name'])->toBe('Basic')
             ->and($session->paymentMethods)->toBe(['card', 'gcash'])
             ->and($session->paymentMethodOptions)->toBe(['card' => ['capture_type' => 'manual']])
             ->and($session->clientSecret)->toBe('cs_3QxSample000006_secret_def456')
@@ -281,6 +315,10 @@ describe('CheckoutSession', function () {
             ->and($session->metadata)->toBe(['order_id' => '1234'])
             ->and($session->expiresAt?->getTimestamp())->toBe(1753424400)
             ->and($session->isCompleted())->toBeFalse();
+    });
+
+    it('reads an amount only if one is ever sent', function () {
+        expect(CheckoutSession::from(['id' => 'cs_1', 'amount' => 25000])->amount)->toBe(25000);
     });
 });
 
@@ -305,7 +343,7 @@ describe('BillingStatementLineItem', function () {
         expect($item->id)->toBe('bsli_3QxSample000011')
             ->and($item->unitPrice)->toBe(20000)
             ->and($item->quantity)->toBe(3)
-            ->and($item->description)->toBe('Consulting hours')
+            ->and($item->description)->toBe('Basic')
             ->and($item->billingStatementId)->toBe('bs_3QxSample000010')
             ->and($item->total())->toBe(60000);
     });
@@ -320,7 +358,7 @@ describe('BillingStatement', function () {
             ->and($statement->currency)->toBe(Currency::PHP)
             ->and($statement->status)->toBe(BillingStatementStatus::Open)
             ->and($statement->customerId)->toBe('cus_3QxSample000001')
-            ->and($statement->description)->toBe('March retainer')
+            ->and($statement->description)->toBe('Mar 1 - Apr 1, 2026')
             ->and($statement->statementDescriptor)->toBe('ACME STORE')
             ->and($statement->billingStatementNumber)->toBe('ACME-0007')
             ->and($statement->billingStatementMerchantName)->toBe('Acme Trading')
@@ -328,7 +366,7 @@ describe('BillingStatement', function () {
             ->and($statement->setupFutureUsage)->toBe('off_session')
             ->and($statement->paymentSettings)->toBe(['payment_methods' => ['card', 'gcash']])
             ->and($statement->paymentIntent?->id)->toBe('pi_3QxSample000001')
-            ->and($statement->customer?->name)->toBe('Ada Lovelace')
+            ->and($statement->customer?->name)->toBe('Joe Dela Cruz')
             ->and($statement->metadata)->toBe(['period' => '2026-03'])
             ->and($statement->isDraft())->toBeFalse();
     });
@@ -341,13 +379,11 @@ describe('BillingStatement', function () {
             ->and($statement->lineItems[0]->total())->toBe(60000);
     });
 
-    it('reads the hosted url from either key PayRex uses for it', function () {
+    it('reads the hosted url from billing_statement_url', function () {
         expect(BillingStatement::from(payload('billing_statement'))->billingStatementUrl)
             ->toBe('https://pay.payrexhq.test/bs_3QxSample000010')
-            ->and(BillingStatement::from([
-                'id' => 'bs_1',
-                'billing_statement_url' => 'https://pay.payrexhq.test/bs_1',
-            ])->billingStatementUrl)->toBe('https://pay.payrexhq.test/bs_1');
+            ->and(BillingStatement::from(['id' => 'bs_1', 'url' => 'https://nope.test'])->billingStatementUrl)
+            ->toBeNull();
     });
 
     it('accepts an iso-8601 timestamp as readily as unix seconds', function () {
@@ -477,7 +513,7 @@ describe('Listing', function () {
             ->and($listing->isEmpty())->toBeFalse()
             ->and($listing->first())->toBeInstanceOf(Customer::class)
             ->and($listing->first()?->id)->toBe('cus_3QxSample000001')
-            ->and($listing->collect()->pluck('name')->all())->toBe(['Ada Lovelace', 'Grace Hopper'])
+            ->and($listing->collect()->pluck('name')->all())->toBe(['Joe Dela Cruz', 'Grace Hopper'])
             ->and(iterator_to_array($listing))->toHaveCount(2)
             ->and($listing->raw)->toBe(payload('listing'));
     });
@@ -491,9 +527,77 @@ describe('Listing', function () {
     });
 });
 
+describe('objects embedded in other objects', function () {
+    $statement = [
+        'id' => 'bs_3QxSample000010',
+        'resource' => 'billing_statement',
+        'amount' => 250000,
+        'currency' => 'PHP',
+        'customer_id' => 'cus_3QxSample000001',
+        'status' => 'draft',
+        'livemode' => false,
+        'customer' => [
+            'id' => 'cus_3QxSample000001',
+            'name' => 'Joe Dela Cruz',
+            'email' => 'joe@example.test',
+        ],
+        'created_at' => 1784988541,
+        'updated_at' => 1784988541,
+    ];
+
+    it('maps the fields an embedded object does carry', function () use ($statement) {
+        $customer = BillingStatement::from($statement)->customer;
+
+        expect($customer)->toBeInstanceOf(Customer::class)
+            ->and($customer->id)->toBe('cus_3QxSample000001')
+            ->and($customer->name)->toBe('Joe Dela Cruz')
+            ->and($customer->email)->toBe('joe@example.test');
+    });
+
+    it('leaves the fields it omits null rather than defaulting them', function () use ($statement) {
+        $customer = BillingStatement::from($statement)->customer;
+
+        expect($customer->livemode)->toBeNull()
+            ->and($customer->createdAt)->toBeNull()
+            ->and($customer->currency)->toBeNull();
+    });
+
+    it('still reads livemode when the payload carries it', function () {
+        expect(Customer::from(['id' => 'cus_1', 'livemode' => true])->livemode)->toBeTrue()
+            ->and(Customer::from(['id' => 'cus_1', 'livemode' => false])->livemode)->toBeFalse()
+            ->and(Customer::from(['id' => 'cus_1'])->livemode)->toBeNull();
+    });
+
+    it('leaves amount null on an embedded payment intent', function () {
+        $intent = PaymentIntent::from([
+            'id' => 'pi_3QxSample000001',
+            'livemode' => false,
+            'client_secret' => 'pi_3QxSample000001_secret_abc123',
+            'latest_payment' => null,
+            'merchant_id' => 'merc_3QxSample000001',
+            'status' => 'canceled',
+            'created_at' => 1784989886,
+        ]);
+
+        expect($intent->amount)->toBeNull()
+            ->and($intent->currency)->toBeNull()
+            ->and($intent->merchantId)->toBe('merc_3QxSample000001');
+    });
+
+    it('still reads amount when the payload carries it', function () {
+        expect(PaymentIntent::from(['id' => 'pi_1', 'amount' => 250000])->amount)->toBe(250000)
+            ->and(PaymentIntent::from(['id' => 'pi_1', 'amount' => 0])->amount)->toBe(0);
+    });
+
+    it('decodes unix integer timestamps', function () use ($statement) {
+        expect(BillingStatement::from($statement)->createdAt?->toIso8601String())
+            ->toBe('2026-07-25T14:09:01+00:00');
+    });
+});
+
 it('has a fixture for every dto that models a PayRex payload', function () {
     // ApiResponseMetadata is built from HTTP headers rather than a response
-    // body, so it has no fixture — see tests/ResponseMetadataTest.php.
+    // body, so it has no fixture - see tests/ResponseMetadataTest.php.
     $exempt = ['ApiResponseMetadata'];
 
     $classes = array_map(

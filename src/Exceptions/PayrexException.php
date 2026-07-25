@@ -50,14 +50,14 @@ class PayrexException extends Exception
             $status === 400 => InvalidRequestException::class,
             $status === 401 => AuthenticationException::class,
             $status === 403 => PermissionException::class,
-            $status === 404 && $responseHasBody => ResourceNotFoundException::class,
-            $status === 404 => RouteNotFoundException::class,
+            $status === 404 => self::notFoundClass($errors, $responseHasBody),
             $status === 422 => InvalidRequestException::class,
             $status === 429 => RateLimitException::class,
             default => ApiErrorException::class,
         };
 
-        if ($class === RouteNotFoundException::class) {
+        // Only synthesise a summary when PayRex gave us nothing to quote.
+        if ($class === RouteNotFoundException::class && $summary === '') {
             $summary = "Route {$method} {$url} not found.";
         }
 
@@ -66,6 +66,34 @@ class PayrexException extends Exception
             : "PayRex API error ({$status}) for {$method} {$url}.";
 
         return new $class($message, $errors, $status, $body);
+    }
+
+    /**
+     * Splits a 404 into "no such route" and "no such record".
+     *
+     * Both arrive as a 404 with a JSON error document, told apart by the error
+     * code: `resource_not_found` for a missing record, `route_not_found` for a
+     * missing route. A 404 carrying neither code falls back to the presence of
+     * a body.
+     *
+     * @param  list<PayrexError>  $errors
+     * @return class-string<self>
+     */
+    private static function notFoundClass(array $errors, bool $responseHasBody): string
+    {
+        foreach ($errors as $error) {
+            if ($error->code === 'route_not_found') {
+                return RouteNotFoundException::class;
+            }
+
+            if ($error->code === 'resource_not_found') {
+                return ResourceNotFoundException::class;
+            }
+        }
+
+        return $responseHasBody
+            ? ResourceNotFoundException::class
+            : RouteNotFoundException::class;
     }
 
     /**

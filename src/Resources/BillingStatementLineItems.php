@@ -36,13 +36,10 @@ final class BillingStatementLineItems extends Resource
         ], $options)));
     }
 
-    /**
-     * @param  array<string, mixed>  $options
+    /*
+     * No retrieve() by design: PayRex serves no GET route for a line item.
+     * Read one from its parent statement's `line_items`.
      */
-    public function retrieve(string $id, array $options = []): BillingStatementLineItem
-    {
-        return BillingStatementLineItem::from($this->client->get($this->path(self::URI, $id), $options));
-    }
 
     /**
      * @param  array<string, mixed>  $options

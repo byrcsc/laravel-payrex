@@ -5,7 +5,7 @@
     "amount_capturable": 0,
     "client_secret": "pi_3QxSample000001_secret_abc123",
     "currency": "PHP",
-    "description": "Order #1234",
+    "description": "Mar 1 - Apr 1, 2026",
     "livemode": false,
     "latest_payment": {
         "id": "pay_3QxSample000009",
@@ -25,7 +25,7 @@
             }
         },
         "currency": "PHP",
-        "description": "Order #1234",
+        "description": "Mar 1 - Apr 1, 2026",
         "fee": 350,
         "livemode": false,
         "metadata": {},

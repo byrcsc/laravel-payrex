@@ -25,7 +25,7 @@ final readonly class CheckoutSession
      */
     public function __construct(
         public string $id,
-        public int $amount = 0,
+        public ?int $amount = null,
         public ?string $url = null,
         public ?CheckoutSessionStatus $status = null,
         public ?Currency $currency = null,
@@ -33,6 +33,7 @@ final readonly class CheckoutSession
         public array $paymentMethods = [],
         public array $paymentMethodOptions = [],
         public ?string $clientSecret = null,
+        public ?string $customerId = null,
         public ?string $customerReferenceId = null,
         public ?string $description = null,
         public ?string $statementDescriptor = null,
@@ -41,7 +42,7 @@ final readonly class CheckoutSession
         public ?SubmitType $submitType = null,
         public ?BillingDetailsCollection $billingDetailsCollection = null,
         public ?PaymentIntent $paymentIntent = null,
-        public bool $livemode = false,
+        public ?bool $livemode = null,
         public array $metadata = [],
         public ?CarbonImmutable $expiresAt = null,
         public ?CarbonImmutable $createdAt = null,
@@ -58,7 +59,7 @@ final readonly class CheckoutSession
 
         return new self(
             id: Payload::string($data, 'id'),
-            amount: Payload::int($data, 'amount'),
+            amount: Payload::nullableInt($data, 'amount'),
             url: Payload::nullableString($data, 'url'),
             status: Payload::enum($data, 'status', CheckoutSessionStatus::class),
             currency: Payload::enum($data, 'currency', Currency::class),
@@ -66,6 +67,7 @@ final readonly class CheckoutSession
             paymentMethods: Payload::strings($data, 'payment_methods'),
             paymentMethodOptions: Payload::object($data, 'payment_method_options') ?? [],
             clientSecret: Payload::nullableString($data, 'client_secret'),
+            customerId: Payload::nullableString($data, 'customer_id'),
             customerReferenceId: Payload::nullableString($data, 'customer_reference_id'),
             description: Payload::nullableString($data, 'description'),
             statementDescriptor: Payload::nullableString($data, 'statement_descriptor'),
@@ -74,7 +76,7 @@ final readonly class CheckoutSession
             submitType: Payload::enum($data, 'submit_type', SubmitType::class),
             billingDetailsCollection: Payload::enum($data, 'billing_details_collection', BillingDetailsCollection::class),
             paymentIntent: $paymentIntent === null ? null : PaymentIntent::from($paymentIntent),
-            livemode: Payload::bool($data, 'livemode'),
+            livemode: Payload::nullableBool($data, 'livemode'),
             metadata: Payload::metadata($data),
             expiresAt: Payload::dateTime($data, 'expires_at'),
             createdAt: Payload::dateTime($data, 'created_at'),

@@ -3,7 +3,7 @@
     "id": "bsli_3QxSample000011",
     "unit_price": 20000,
     "quantity": 3,
-    "description": "Consulting hours",
+    "description": "Basic",
     "billing_statement_id": "bs_3QxSample000010",
     "livemode": false,
     "created_at": 1753420800,

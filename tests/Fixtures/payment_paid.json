@@ -1,0 +1,38 @@
+{
+    "id": "pay_3QxSample000001",
+    "resource": "payment",
+    "amount": 155000,
+    "amount_refunded": 0,
+    "consolidated_net_amount": 150252,
+    "consolidated_status": "paid",
+    "billing": {
+        "name": "Joe Dela Cruz",
+        "email": "joe@example.test",
+        "phone": "+639171234567",
+        "address": {
+            "line1": "12 Analytical Engine Street",
+            "line2": null,
+            "city": "Makati",
+            "state": "Metro Manila",
+            "postal_code": "1226",
+            "country": "PH"
+        }
+    },
+    "currency": "PHP",
+    "description": "Mar 1 - Apr 1, 2026",
+    "fee": 3565,
+    "livemode": false,
+    "metadata": null,
+    "net_amount": 150252,
+    "payment_intent_id": "pi_3QxSample000001",
+    "status": "paid",
+    "customer": null,
+    "origin": "api",
+    "payment_method": {
+        "type": "gcash",
+        "payment_method_type": "gcash"
+    },
+    "refunded": false,
+    "created_at": 1784990324,
+    "updated_at": 1784990324
+}
