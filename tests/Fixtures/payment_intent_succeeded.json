@@ -1,0 +1,61 @@
+{
+    "id": "pi_3QxSample000001",
+    "amount": 10000,
+    "amount_received": 10000,
+    "amount_capturable": 0,
+    "client_secret": "pi_3QxSample000001_secret_abc123",
+    "currency": "PHP",
+    "description": "Order #1234",
+    "livemode": false,
+    "latest_payment": {
+        "id": "pay_3QxSample000009",
+        "amount": 10000,
+        "amount_refunded": 0,
+        "billing": {
+            "name": "Juan dela Cruz",
+            "email": "juan@example.com",
+            "phone": "+639171234567",
+            "address": {
+                "line1": "123 Rizal Ave",
+                "line2": null,
+                "city": "Makati",
+                "state": "Metro Manila",
+                "postal_code": "1200",
+                "country": "PH"
+            }
+        },
+        "currency": "PHP",
+        "description": "Order #1234",
+        "fee": 350,
+        "livemode": false,
+        "metadata": {},
+        "net_amount": 9650,
+        "payment_intent_id": "pi_3QxSample000001",
+        "status": "paid",
+        "customer": null,
+        "payment_method": {
+            "id": "pm_3QxSample000004",
+            "type": "card",
+            "details": { "brand": "visa", "last4": "4242" },
+            "billing_details": null,
+            "livemode": false,
+            "metadata": {},
+            "allow_redisplay": "always",
+            "created_at": 1753420800,
+            "updated_at": 1753420800
+        },
+        "refunded": false,
+        "page_session": null,
+        "created_at": 1753420900,
+        "updated_at": 1753420900
+    },
+    "last_payment_error": null,
+    "statement_descriptor": "ACME STORE",
+    "status": "succeeded",
+    "payment_methods": ["card"],
+    "payment_method_options": {},
+    "next_action": null,
+    "metadata": { "order_id": "1234" },
+    "created_at": 1753420800,
+    "updated_at": 1753420900
+}

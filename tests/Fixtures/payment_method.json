@@ -1,0 +1,24 @@
+{
+    "resource": "payment_method",
+    "id": "pm_3QxSample000004",
+    "type": "card",
+    "card": {
+        "brand": "visa",
+        "last4": "4242",
+        "exp_month": 12,
+        "exp_year": 2030
+    },
+    "billing_details": {
+        "name": "Ada Lovelace",
+        "email": "ada@example.test",
+        "address": {
+            "line1": "12 Analytical Engine Street",
+            "country": "PH"
+        }
+    },
+    "allow_redisplay": "always",
+    "livemode": false,
+    "metadata": { "source": "checkout" },
+    "created_at": 1753420800,
+    "updated_at": 1753420860
+}

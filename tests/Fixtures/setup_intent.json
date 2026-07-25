@@ -1,0 +1,24 @@
+{
+    "resource": "setup_intent",
+    "id": "seti_3QxSample000005",
+    "status": "awaiting_next_action",
+    "client_secret": "seti_3QxSample000005_secret_xyz789",
+    "description": "Save a card for later",
+    "return_url": "https://shop.test/setup/complete",
+    "usage": "off_session",
+    "payment_methods": ["card"],
+    "next_action": {
+        "type": "redirect",
+        "redirect_url": "https://pay.payrexhq.test/authorize/seti_3QxSample000005"
+    },
+    "payment_method_id": "pm_3QxSample000004",
+    "customer": {
+        "resource": "customer",
+        "id": "cus_3QxSample000001",
+        "name": "Ada Lovelace"
+    },
+    "livemode": false,
+    "metadata": { "user_id": "42" },
+    "created_at": 1753420800,
+    "updated_at": 1753420860
+}

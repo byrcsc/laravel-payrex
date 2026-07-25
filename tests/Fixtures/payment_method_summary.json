@@ -1,0 +1,7 @@
+{
+    "type": "gcash",
+    "details": {
+        "account_name": "Ada Lovelace",
+        "account_number": "09171234567"
+    }
+}

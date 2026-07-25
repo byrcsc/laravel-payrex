@@ -1,0 +1,11 @@
+{
+    "resource": "billing_statement_line_item",
+    "id": "bsli_3QxSample000011",
+    "unit_price": 20000,
+    "quantity": 3,
+    "description": "Consulting hours",
+    "billing_statement_id": "bs_3QxSample000010",
+    "livemode": false,
+    "created_at": 1753420800,
+    "updated_at": 1753420860
+}

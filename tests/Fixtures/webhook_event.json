@@ -1,0 +1,21 @@
+{
+    "id": "evt_3QxSample000015",
+    "resource": "event",
+    "type": "payment_intent.succeeded",
+    "livemode": false,
+    "pending_webhooks": 2,
+    "created_at": 1753420800,
+    "updated_at": 1753420860,
+    "data": {
+        "resource": {
+            "resource": "payment_intent",
+            "id": "pi_3QxSample000001",
+            "amount": 10000,
+            "currency": "PHP",
+            "status": "succeeded"
+        },
+        "previous_attributes": {
+            "status": "awaiting_payment_method"
+        }
+    }
+}

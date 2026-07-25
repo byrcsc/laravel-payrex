@@ -1,0 +1,8 @@
+{
+    "code": "parameter_invalid",
+    "detail": "Amount must be at least 10000.",
+    "parameter": "amount",
+    "meta": {
+        "type": "invalid_request_error"
+    }
+}

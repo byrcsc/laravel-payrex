@@ -1,0 +1,22 @@
+{
+    "id": "pi_3QxSample000001",
+    "amount": 10000,
+    "amount_received": 0,
+    "amount_capturable": 0,
+    "client_secret": "pi_3QxSample000001_secret_abc123",
+    "currency": "PHP",
+    "description": "Order #1234",
+    "livemode": false,
+    "latest_payment": null,
+    "last_payment_error": null,
+    "statement_descriptor": "ACME STORE",
+    "status": "awaiting_payment_method",
+    "payment_methods": ["card", "gcash"],
+    "payment_method_options": {
+        "card": { "capture_type": "automatic" }
+    },
+    "next_action": null,
+    "metadata": { "order_id": "1234" },
+    "created_at": 1753420800,
+    "updated_at": 1753420800
+}

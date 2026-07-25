@@ -1,0 +1,14 @@
+{
+    "resource": "payout",
+    "id": "po_3QxSample000012",
+    "amount": 96500,
+    "net_amount": 96500,
+    "status": "in_transit",
+    "destination": {
+        "bank_name": "BDO Unibank",
+        "account_number": "****6789"
+    },
+    "livemode": false,
+    "created_at": 1753420800,
+    "updated_at": 1753420860
+}

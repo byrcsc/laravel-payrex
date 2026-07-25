@@ -1,0 +1,23 @@
+{
+    "resource": "customer",
+    "id": "cus_3QxSample000001",
+    "name": "Ada Lovelace",
+    "email": "ada@example.test",
+    "currency": "PHP",
+    "billing": {
+        "name": "Ada Lovelace",
+        "email": "ada@example.test",
+        "phone": "+639171234567",
+        "address": {
+            "line1": "12 Analytical Engine Street",
+            "city": "Makati",
+            "country": "PH"
+        }
+    },
+    "billing_statement_prefix": "ACME",
+    "next_billing_statement_sequence_number": "0007",
+    "livemode": false,
+    "metadata": { "user_id": "42" },
+    "created_at": 1753420800,
+    "updated_at": 1753420860
+}

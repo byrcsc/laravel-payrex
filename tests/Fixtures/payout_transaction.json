@@ -1,0 +1,10 @@
+{
+    "resource": "payout_transaction",
+    "id": "po_txn_3QxSample000013",
+    "amount": 10000,
+    "net_amount": 9650,
+    "transaction_type": "payment",
+    "transaction_id": "pay_3QxSample000002",
+    "created_at": 1753420800,
+    "updated_at": 1753420860
+}

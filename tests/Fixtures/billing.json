@@ -1,0 +1,13 @@
+{
+    "name": "Ada Lovelace",
+    "email": "ada@example.test",
+    "phone": "+639171234567",
+    "address": {
+        "line1": "12 Analytical Engine Street",
+        "line2": "Unit 4B",
+        "city": "Makati",
+        "state": "Metro Manila",
+        "postal_code": "1226",
+        "country": "PH"
+    }
+}

@@ -1,0 +1,12 @@
+{
+    "resource": "webhook",
+    "id": "wh_3QxSample000014",
+    "url": "https://shop.test/payrex/webhook",
+    "status": "enabled",
+    "description": "Production endpoint",
+    "secret_key": "whsk_test_returned_once",
+    "events": ["payment_intent.succeeded", "refund.created"],
+    "livemode": false,
+    "created_at": 1753420800,
+    "updated_at": 1753420860
+}

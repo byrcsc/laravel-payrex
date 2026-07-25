@@ -1,0 +1,18 @@
+{
+    "resource": "customer_session",
+    "id": "cuss_3QxSample000007",
+    "client_secret": "cuss_3QxSample000007_secret_ghi789",
+    "customer": {
+        "resource": "customer",
+        "id": "cus_3QxSample000001",
+        "name": "Ada Lovelace"
+    },
+    "components": [
+        { "name": "payment_method_list", "enabled": true }
+    ],
+    "expired": false,
+    "livemode": false,
+    "expired_at": null,
+    "created_at": 1753420800,
+    "updated_at": 1753420860
+}

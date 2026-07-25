@@ -1,0 +1,43 @@
+{
+    "resource": "billing_statement",
+    "id": "bs_3QxSample000010",
+    "amount": 60000,
+    "currency": "PHP",
+    "status": "open",
+    "customer_id": "cus_3QxSample000001",
+    "description": "March retainer",
+    "statement_descriptor": "ACME STORE",
+    "billing_statement_number": "ACME-0007",
+    "url": "https://pay.payrexhq.test/bs_3QxSample000010",
+    "billing_statement_merchant_name": "Acme Trading",
+    "billing_details_collection": "auto",
+    "setup_future_usage": "off_session",
+    "line_items": [
+        {
+            "resource": "billing_statement_line_item",
+            "id": "bsli_3QxSample000011",
+            "unit_price": 20000,
+            "quantity": 3,
+            "description": "Consulting hours"
+        }
+    ],
+    "payment_settings": {
+        "payment_methods": ["card", "gcash"]
+    },
+    "payment_intent": {
+        "id": "pi_3QxSample000001",
+        "amount": 60000,
+        "status": "awaiting_payment_method"
+    },
+    "customer": {
+        "resource": "customer",
+        "id": "cus_3QxSample000001",
+        "name": "Ada Lovelace"
+    },
+    "livemode": false,
+    "metadata": { "period": "2026-03" },
+    "due_at": "2026-04-15T00:00:00+00:00",
+    "finalized_at": 1753420860,
+    "created_at": 1753420800,
+    "updated_at": 1753420860
+}

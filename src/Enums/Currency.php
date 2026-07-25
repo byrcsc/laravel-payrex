@@ -1,0 +1,17 @@
+<?php
+
+declare(strict_types=1);
+
+namespace ByRcsc\LaravelPayrex\Enums;
+
+/**
+ * Currencies PayRex settles in.
+ *
+ * Resolved with `tryFrom()` when decoding, so a value PayRex adds later
+ * surfaces as `null` on the DTO rather than throwing. The literal string is
+ * always available on the DTO's `$raw` payload.
+ */
+enum Currency: string
+{
+    case PHP = 'PHP';
+}

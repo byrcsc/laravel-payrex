@@ -1,0 +1,43 @@
+{
+    "resource": "payment",
+    "id": "pay_3QxSample000002",
+    "amount": 10000,
+    "amount_refunded": 2500,
+    "fee": 350,
+    "net_amount": 9650,
+    "currency": "PHP",
+    "status": "paid",
+    "description": "Order #1234",
+    "payment_intent_id": "pi_3QxSample000001",
+    "origin": "checkout_session",
+    "refunded": false,
+    "livemode": false,
+    "billing": {
+        "name": "Ada Lovelace",
+        "email": "ada@example.test",
+        "address": {
+            "line1": "12 Analytical Engine Street",
+            "country": "PH"
+        }
+    },
+    "customer": {
+        "resource": "customer",
+        "id": "cus_3QxSample000001",
+        "name": "Ada Lovelace",
+        "email": "ada@example.test"
+    },
+    "payment_method": {
+        "type": "card",
+        "details": {
+            "brand": "visa",
+            "last4": "4242"
+        }
+    },
+    "page_session": {
+        "id": "ps_3QxSample000009",
+        "url": "https://pay.payrexhq.test/ps_3QxSample000009"
+    },
+    "metadata": { "order_id": "1234" },
+    "created_at": 1753420800,
+    "updated_at": 1753420860
+}

@@ -1,0 +1,16 @@
+parameters:
+    level: max
+    paths:
+        - src
+        - config
+        - routes
+        # PHPStan skips a trait no analysed class uses, so the models that use
+        # `HasPayrexCustomer` have to be in scope for it to be checked at all.
+        - tests/Stubs
+    tmpDir: build/phpstan
+
+    # This is a package, so Larastan cannot boot an application to discover
+    # where config files live. Point it at ours, otherwise every `env()` call in
+    # config/payrex.php is reported as being outside the config directory.
+    configDirectories:
+        - config
