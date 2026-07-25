@@ -1,21 +1,21 @@
 {
     "resource": "checkout_session",
     "id": "cs_3QxSample000006",
-    "amount": 25000,
     "url": "https://pay.payrexhq.test/cs_3QxSample000006",
     "status": "active",
     "currency": "PHP",
     "line_items": [
-        { "name": "Difference Engine", "amount": 20000, "quantity": 1 },
-        { "name": "Punch cards", "amount": 5000, "quantity": 1 }
+        { "name": "Basic", "amount": 20000, "quantity": 1 },
+        { "name": "Additional seat", "amount": 5000, "quantity": 1 }
     ],
     "payment_methods": ["card", "gcash"],
     "payment_method_options": {
         "card": { "capture_type": "manual" }
     },
     "client_secret": "cs_3QxSample000006_secret_def456",
+    "customer_id": "cus_3QxSample000001",
     "customer_reference_id": "user_42",
-    "description": "Order #1234",
+    "description": "Mar 1 - Apr 1, 2026",
     "statement_descriptor": "ACME STORE",
     "success_url": "https://shop.test/checkout/success",
     "cancel_url": "https://shop.test/checkout/cancel",

@@ -9,7 +9,7 @@ use ByRcsc\LaravelPayrex\Support\Payload;
 use Carbon\CarbonImmutable;
 
 /**
- * One line of a payout — the payment or refund that contributed to it.
+ * One line of a payout - the payment or refund that contributed to it.
  */
 final readonly class PayoutTransaction
 {

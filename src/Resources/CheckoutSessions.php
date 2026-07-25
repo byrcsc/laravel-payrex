@@ -16,7 +16,7 @@ use ByRcsc\LaravelPayrex\Support\PayrexCursorPaginator;
 use Generator;
 
 /**
- * Checkout sessions — PayRex-hosted payment pages.
+ * Checkout sessions - PayRex-hosted payment pages.
  */
 final class CheckoutSessions extends Resource
 {

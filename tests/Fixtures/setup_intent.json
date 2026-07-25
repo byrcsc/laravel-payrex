@@ -3,7 +3,7 @@
     "id": "seti_3QxSample000005",
     "status": "awaiting_next_action",
     "client_secret": "seti_3QxSample000005_secret_xyz789",
-    "description": "Save a card for later",
+    "description": "Save a card for renewals",
     "return_url": "https://shop.test/setup/complete",
     "usage": "off_session",
     "payment_methods": ["card"],
@@ -15,7 +15,7 @@
     "customer": {
         "resource": "customer",
         "id": "cus_3QxSample000001",
-        "name": "Ada Lovelace"
+        "name": "Joe Dela Cruz"
     },
     "livemode": false,
     "metadata": { "user_id": "42" },

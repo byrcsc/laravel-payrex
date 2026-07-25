@@ -8,8 +8,8 @@ namespace ByRcsc\LaravelPayrex\Data;
  * The status and headers of a PayRex response, kept aside from its body.
  *
  * PayRex does not document the headers it sets, so nothing here names one.
- * Read whichever header you need by name — a request identifier to quote to
- * PayRex support, or rate-limit counters — and treat a null as "not sent".
+ * Read whichever header you need by name - a request identifier to quote to
+ * PayRex support, or rate-limit counters - and treat a null as "not sent".
  */
 final readonly class ApiResponseMetadata
 {
@@ -22,7 +22,7 @@ final readonly class ApiResponseMetadata
     ) {}
 
     /**
-     * Normalizes whatever the HTTP client hands back — a header may arrive as
+     * Normalizes whatever the HTTP client hands back - a header may arrive as
      * a bare string or as a list of values.
      *
      * @param  array<mixed, mixed>  $headers

@@ -20,7 +20,7 @@ describe('requests', function () {
         $intent = Payrex::paymentIntents()->create(
             amount: 10_000,
             paymentMethods: ['card', 'gcash'],
-            description: 'Order #1234',
+            description: 'Mar 1 - Apr 1, 2026',
             statementDescriptor: 'ACME STORE',
             metadata: ['order_id' => '1234'],
         );
@@ -34,7 +34,7 @@ describe('requests', function () {
                     'amount' => '10000',
                     'currency' => 'PHP',
                     'payment_methods' => ['card', 'gcash'],
-                    'description' => 'Order #1234',
+                    'description' => 'Mar 1 - Apr 1, 2026',
                     'statement_descriptor' => 'ACME STORE',
                     'metadata' => ['order_id' => '1234'],
                 ]);
@@ -173,7 +173,7 @@ describe('decoding', function () {
             ->and($intent->currency)->toBe(Currency::PHP)
             ->and($intent->status)->toBe(PaymentIntentStatus::AwaitingPaymentMethod)
             ->and($intent->clientSecret)->toBe('pi_3QxSample000001_secret_abc123')
-            ->and($intent->description)->toBe('Order #1234')
+            ->and($intent->description)->toBe('Mar 1 - Apr 1, 2026')
             ->and($intent->statementDescriptor)->toBe('ACME STORE')
             ->and($intent->livemode)->toBeFalse()
             ->and($intent->paymentMethods)->toBe(['card', 'gcash'])
@@ -230,7 +230,7 @@ describe('decoding', function () {
         $intent = Payrex::paymentIntents()->retrieve('pi_1');
 
         expect($intent->id)->toBe('pi_1')
-            ->and($intent->amount)->toBe(0)
+            ->and($intent->amount)->toBeNull()
             ->and($intent->status)->toBeNull()
             ->and($intent->paymentMethods)->toBe([])
             ->and($intent->metadata)->toBe([])

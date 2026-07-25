@@ -43,7 +43,7 @@ final class WebhookCreateCommand extends Command
         if ($endpoint->secretKey !== null) {
             $this->newLine();
             $this->components->warn(
-                'Copy the signing secret below into PAYREX_WEBHOOK_SECRET now — PayRex will not show it in full again.'
+                'Copy the signing secret below into PAYREX_WEBHOOK_SECRET now. PayRex will not show it in full again.'
             );
             $this->components->twoColumnDetail('Signing secret', $endpoint->secretKey);
         }

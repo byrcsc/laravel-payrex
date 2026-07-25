@@ -12,7 +12,7 @@ use Carbon\CarbonImmutable;
 /**
  * A charge PayRex attempted against a payment method.
  *
- * All money is expressed in the currency's smallest unit — centavos for PHP,
+ * All money is expressed in the currency's smallest unit - centavos for PHP,
  * so `amount: 10000` is ₱100.00.
  */
 final readonly class Payment
@@ -28,13 +28,15 @@ final readonly class Payment
         public int $amountRefunded = 0,
         public ?int $fee = null,
         public ?int $netAmount = null,
+        public ?int $consolidatedNetAmount = null,
+        public ?string $consolidatedStatus = null,
         public ?Currency $currency = null,
         public ?PaymentStatus $status = null,
         public ?string $description = null,
         public ?string $paymentIntentId = null,
         public ?string $origin = null,
         public bool $refunded = false,
-        public bool $livemode = false,
+        public ?bool $livemode = null,
         public ?Billing $billing = null,
         public ?Customer $customer = null,
         public ?PaymentMethodSummary $paymentMethod = null,
@@ -60,13 +62,15 @@ final readonly class Payment
             amountRefunded: Payload::int($data, 'amount_refunded'),
             fee: Payload::nullableInt($data, 'fee'),
             netAmount: Payload::nullableInt($data, 'net_amount'),
+            consolidatedNetAmount: Payload::nullableInt($data, 'consolidated_net_amount'),
+            consolidatedStatus: Payload::nullableString($data, 'consolidated_status'),
             currency: Payload::enum($data, 'currency', Currency::class),
             status: Payload::enum($data, 'status', PaymentStatus::class),
             description: Payload::nullableString($data, 'description'),
             paymentIntentId: Payload::nullableString($data, 'payment_intent_id'),
             origin: Payload::nullableString($data, 'origin'),
             refunded: Payload::bool($data, 'refunded'),
-            livemode: Payload::bool($data, 'livemode'),
+            livemode: Payload::nullableBool($data, 'livemode'),
             billing: $billing === null ? null : Billing::from($billing),
             customer: $customer === null ? null : Customer::from($customer),
             paymentMethod: $paymentMethod === null ? null : PaymentMethodSummary::from($paymentMethod),

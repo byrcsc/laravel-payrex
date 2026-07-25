@@ -23,6 +23,7 @@ use ByRcsc\LaravelPayrex\Events\PayoutDeposited;
 use ByRcsc\LaravelPayrex\Events\RefundCreated;
 use ByRcsc\LaravelPayrex\Events\RefundUpdated;
 use ByRcsc\LaravelPayrex\Events\SetupIntentSucceeded;
+use ByRcsc\LaravelPayrex\Support\WebhookSignature;
 
 return [
 
@@ -44,7 +45,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | Your PayRex publishable key. Unlike the secret key this one is safe for
-    | the browser — it is what PayRex Elements needs in order to tokenise card
+    | the browser - it is what PayRex Elements needs in order to tokenise card
     | details on the client. Reach it with `Payrex::publicKey()`.
     |
     */
@@ -105,9 +106,14 @@ return [
     | `enabled`   registers the package webhook route. Turn it off if you would
     |             rather wire the controller into your own routes file.
     | `path`      the URI PayRex should POST to.
-    | `tolerance` how many seconds of clock drift to allow between the signed
-    |             timestamp and now as a freshness check. Set to 0 to skip the
-    |             timestamp check entirely. Listeners must still be idempotent.
+    | `tolerance` how many seconds a delivery may lag behind now before it is
+    |             rejected as stale. Set to 0 to skip the timestamp check
+    |             entirely. Listeners must be idempotent either way.
+    |
+    |             Five minutes is safe only because PayRex re-signs each retry
+    |             with a fresh timestamp, so a stale delivery is never a real
+    |             retry. See `WebhookSignature::DEFAULT_TOLERANCE`. Raise it if
+    |             your server clock can drift more than this ahead of PayRex's.
     | `header`    the request header carrying the signature.
     |
     */
@@ -118,7 +124,7 @@ return [
 
         'path' => env('PAYREX_WEBHOOK_PATH', 'payrex/webhook'),
 
-        'tolerance' => (int) env('PAYREX_WEBHOOK_TOLERANCE', 300),
+        'tolerance' => (int) env('PAYREX_WEBHOOK_TOLERANCE', WebhookSignature::DEFAULT_TOLERANCE),
 
         'header' => env('PAYREX_WEBHOOK_HEADER', 'Payrex-Signature'),
 
@@ -134,7 +140,7 @@ return [
          * These defaults match PayRex's documented event types, but PayRex may
          * add more at any time. A type not listed here still fires the generic
          * `PayrexWebhookReceived` event, which is dispatched for every verified
-         * payload regardless of type — add your own entries rather than
+         * payload regardless of type - add your own entries rather than
          * waiting on a package release.
          */
         'events' => [

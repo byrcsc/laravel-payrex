@@ -218,7 +218,37 @@ describe('error mapping', function () {
             ->toThrow(ResourceNotFoundException::class);
     });
 
-    it('maps 404 with an empty body to a route not found exception', function () {
+    it('maps a 404 with a route_not_found code to a route not found exception', function () {
+        Http::fake(['*' => Http::response(['errors' => [[
+            'code' => 'route_not_found',
+            'detail' => 'Request URL (GET: /billing_statement_line_items/bsli_1) does not exist. Please see https://docs.payrexhq.com/docs or contact us through chat support.',
+        ]]], 404)]);
+
+        expect(fn () => payrex()->get('/billing_statement_line_items/bsli_1'))
+            ->toThrow(RouteNotFoundException::class);
+    });
+
+    it('keeps the route_not_found detail in the exception message', function () {
+        Http::fake(['*' => Http::response(['errors' => [[
+            'code' => 'route_not_found',
+            'detail' => 'Request URL (GET: /nope) does not exist.',
+        ]]], 404)]);
+
+        expect(fn () => payrex()->get('/nope'))
+            ->toThrow(RouteNotFoundException::class, 'Request URL (GET: /nope) does not exist.');
+    });
+
+    it('maps a 404 with a resource_not_found code to a resource not found exception', function () {
+        Http::fake(['*' => Http::response(['errors' => [[
+            'code' => 'resource_not_found',
+            'detail' => 'Payment with id pay_1 does not exist. Please provide a valid id.',
+        ]]], 404)]);
+
+        expect(fn () => payrex()->get('/payments/pay_1'))
+            ->toThrow(ResourceNotFoundException::class);
+    });
+
+    it('falls back to body presence for a 404 with no error code', function () {
         Http::fake(['*' => Http::response('', 404)]);
 
         expect(fn () => payrex()->get('/nope'))
@@ -381,11 +411,16 @@ describe('parseEvent', function () {
     });
 
     it('honours the configured tolerance', function () use ($body) {
+        // Deliberately not 300: a value that differs from the shipped default
+        // is the only way this proves the config is read at all.
+        $this->bootConfig = ['payrex.webhooks.tolerance' => 60];
+        $this->refreshApplication();
+
         $payload = $body();
-        $header = WebhookSignature::header($payload, 'whsk_test_signing_secret', timestamp: time() - 3600);
+        $header = WebhookSignature::header($payload, 'whsk_test_signing_secret', timestamp: time() - 120);
 
         expect(fn () => payrex()->parseEvent($payload, $header))
-            ->toThrow(SignatureVerificationException::class, 'outside the 300 second tolerance');
+            ->toThrow(SignatureVerificationException::class, 'outside the 60 second tolerance');
     });
 
     it('rejects a signed body that is not a PayRex event', function () {

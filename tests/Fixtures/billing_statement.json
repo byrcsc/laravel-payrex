@@ -5,10 +5,10 @@
     "currency": "PHP",
     "status": "open",
     "customer_id": "cus_3QxSample000001",
-    "description": "March retainer",
+    "description": "Mar 1 - Apr 1, 2026",
     "statement_descriptor": "ACME STORE",
     "billing_statement_number": "ACME-0007",
-    "url": "https://pay.payrexhq.test/bs_3QxSample000010",
+    "billing_statement_url": "https://pay.payrexhq.test/bs_3QxSample000010",
     "billing_statement_merchant_name": "Acme Trading",
     "billing_details_collection": "auto",
     "setup_future_usage": "off_session",
@@ -18,7 +18,7 @@
             "id": "bsli_3QxSample000011",
             "unit_price": 20000,
             "quantity": 3,
-            "description": "Consulting hours"
+            "description": "Basic"
         }
     ],
     "payment_settings": {
@@ -32,7 +32,7 @@
     "customer": {
         "resource": "customer",
         "id": "cus_3QxSample000001",
-        "name": "Ada Lovelace"
+        "name": "Joe Dela Cruz"
     },
     "livemode": false,
     "metadata": { "period": "2026-03" },

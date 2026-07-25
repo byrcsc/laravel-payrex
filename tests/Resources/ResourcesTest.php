@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Http;
  * Stubs every endpoint with one payload.
  *
  * Laravel's `Http::fake()` pushes stubs rather than replacing them, and the
- * first match wins — so each test faking exactly once keeps things honest.
+ * first match wins - so each test faking exactly once keeps things honest.
  *
  * @param  array<string, mixed>|string  $response
  */
@@ -53,11 +53,11 @@ describe('checkout sessions', function () {
         fakePayrex();
 
         Payrex::checkoutSessions()->create(
-            lineItems: [['name' => 'Sticker pack', 'amount' => 10_000, 'quantity' => 1]],
+            lineItems: [['name' => 'Basic', 'amount' => 10_000, 'quantity' => 1]],
             paymentMethods: ['card', 'gcash'],
             successUrl: 'https://shop.test/success',
             cancelUrl: 'https://shop.test/cancel',
-            description: 'Sticker order',
+            description: 'Mar 1 - Apr 1, 2026',
             submitType: SubmitType::Pay,
         );
 
@@ -68,7 +68,7 @@ describe('checkout sessions', function () {
             expect($request->method())->toBe('POST')
                 ->and($request->url())->toBe('https://api.payrexhq.test/checkout_sessions')
                 ->and(urldecode($request->body()))->toBe(
-                    'line_items[][name]=Sticker pack'
+                    'line_items[][name]=Basic'
                     .'&line_items[][amount]=10000'
                     .'&line_items[][quantity]=1'
                     .'&payment_methods[]=card'
@@ -76,7 +76,7 @@ describe('checkout sessions', function () {
                     .'&success_url=https://shop.test/success'
                     .'&cancel_url=https://shop.test/cancel'
                     .'&currency=PHP'
-                    .'&description=Sticker order'
+                    .'&description=Mar 1 - Apr 1, 2026'
                     .'&submit_type=pay'
                 );
 
@@ -113,13 +113,12 @@ describe('checkout sessions', function () {
             'id' => 'cs_1',
             'url' => 'https://checkout.payrexhq.com/cs_1',
             'status' => 'completed',
-            'amount' => 10000,
             'currency' => 'PHP',
             'submit_type' => 'pay',
             'billing_details_collection' => 'always',
             'payment_method_options' => ['card' => ['capture_type' => 'automatic']],
             'statement_descriptor' => 'BYRCSC',
-            'line_items' => [['name' => 'Sticker pack', 'amount' => 10000]],
+            'line_items' => [['name' => 'Basic', 'amount' => 10000]],
             'payment_methods' => ['card'],
         ]);
 
@@ -128,13 +127,13 @@ describe('checkout sessions', function () {
         expect($session->url)->toBe('https://checkout.payrexhq.com/cs_1')
             ->and($session->status)->toBe(CheckoutSessionStatus::Completed)
             ->and($session->isCompleted())->toBeTrue()
-            ->and($session->amount)->toBe(10000)
+            ->and($session->amount)->toBeNull()
             ->and($session->currency)->toBe(Currency::PHP)
             ->and($session->submitType)->toBe(SubmitType::Pay)
             ->and($session->billingDetailsCollection?->value)->toBe('always')
             ->and($session->paymentMethodOptions)->toBe(['card' => ['capture_type' => 'automatic']])
             ->and($session->statementDescriptor)->toBe('BYRCSC')
-            ->and($session->lineItems)->toBe([['name' => 'Sticker pack', 'amount' => 10000]]);
+            ->and($session->lineItems)->toBe([['name' => 'Basic', 'amount' => 10000]]);
     });
 });
 
@@ -367,10 +366,10 @@ describe('payments', function () {
     it('updates a payment with a put', function () {
         fakePayrex();
 
-        Payrex::payments()->update('pay_1', description: 'Order #9', metadata: ['ref' => '9']);
+        Payrex::payments()->update('pay_1', description: 'Apr 1 - May 1, 2026', metadata: ['ref' => '9']);
 
         assertCalled('PUT', '/payments/pay_1', [
-            'description' => 'Order #9',
+            'description' => 'Apr 1 - May 1, 2026',
             'metadata' => ['ref' => '9'],
         ]);
     });
@@ -437,14 +436,14 @@ describe('billing statements', function () {
 
         Payrex::billingStatements()->create(
             customerId: 'cus_1',
-            description: 'July services',
+            description: 'Jul 1 - Aug 1, 2026',
             paymentSettings: ['payment_methods' => ['gcash', 'card']],
         );
 
         assertCalled('POST', '/billing_statements', [
             'customer_id' => 'cus_1',
             'currency' => 'PHP',
-            'description' => 'July services',
+            'description' => 'Jul 1 - Aug 1, 2026',
             'payment_settings' => ['payment_methods' => ['gcash', 'card']],
         ]);
     });
@@ -469,8 +468,16 @@ describe('billing statements', function () {
         assertCalled('POST', '/billing_statements/bs_1/send');
     });
 
-    it('decodes a statement returned by the send endpoint', function () {
-        fakePayrex(['id' => 'bs_1', 'status' => 'open', 'url' => 'https://payrex.test/bs_1']);
+    it('returns null when send answers with an empty body', function () {
+        Http::fake(['*' => Http::response('', 204)]);
+
+        expect(Payrex::billingStatements()->send('bs_1'))->toBeNull();
+
+        assertCalled('POST', '/billing_statements/bs_1/send');
+    });
+
+    it('decodes a statement when send answers with one', function () {
+        fakePayrex(['id' => 'bs_1', 'status' => 'open', 'billing_statement_url' => 'https://payrex.test/bs_1']);
 
         $statement = Payrex::billingStatements()->send('bs_1');
 
@@ -484,7 +491,7 @@ describe('billing statements', function () {
             'amount' => 30000,
             'status' => 'draft',
             'line_items' => [
-                ['id' => 'bsli_1', 'unit_price' => 10000, 'quantity' => 3, 'description' => 'Consulting'],
+                ['id' => 'bsli_1', 'unit_price' => 10000, 'quantity' => 3, 'description' => 'Basic'],
             ],
         ]);
 
@@ -493,7 +500,7 @@ describe('billing statements', function () {
         expect($statement->status)->toBe(BillingStatementStatus::Draft)
             ->and($statement->isDraft())->toBeTrue()
             ->and($statement->lineItems)->toHaveCount(1)
-            ->and($statement->lineItems[0]->description)->toBe('Consulting')
+            ->and($statement->lineItems[0]->description)->toBe('Basic')
             ->and($statement->lineItems[0]->total())->toBe(30000);
     });
 
@@ -519,14 +526,14 @@ describe('billing statement line items', function () {
             billingStatementId: 'bs_1',
             unitPrice: 10_000,
             quantity: 3,
-            description: 'Consulting',
+            description: 'Basic',
         );
 
         assertCalled('POST', '/billing_statement_line_items', [
             'billing_statement_id' => 'bs_1',
             'unit_price' => '10000',
             'quantity' => '3',
-            'description' => 'Consulting',
+            'description' => 'Basic',
         ]);
     });
 
@@ -539,12 +546,8 @@ describe('billing statement line items', function () {
         assertCalled('PUT', '/billing_statement_line_items/bsli_1', ['unit_price' => '5000']);
     });
 
-    it('retrieves a line item', function () {
-        fakePayrex();
-
-        Payrex::billingStatementLineItems()->retrieve('bsli_1');
-
-        assertCalled('GET', '/billing_statement_line_items/bsli_1');
+    it('offers no line item retrieve', function () {
+        expect(method_exists(Payrex::billingStatementLineItems(), 'retrieve'))->toBeFalse();
     });
 
     it('deletes a line item', function () {

@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Ties an Eloquent model to a PayRex customer.
  *
- * Add the trait to whichever model represents a payer — usually `User` — and
+ * Add the trait to whichever model represents a payer - usually `User` - and
  * publish the migration that gives it a `payrex_customer_id` column:
  *
  * ```

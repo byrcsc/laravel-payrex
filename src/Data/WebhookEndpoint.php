@@ -11,7 +11,7 @@ use Carbon\CarbonImmutable;
 /**
  * A webhook endpoint registered with PayRex.
  *
- * `secretKey` is the signing secret for this endpoint — the value that belongs
+ * `secretKey` is the signing secret for this endpoint - the value that belongs
  * in `PAYREX_WEBHOOK_SECRET`. PayRex only returns it in full when the endpoint
  * is created.
  */
@@ -28,7 +28,7 @@ final readonly class WebhookEndpoint
         public ?string $description = null,
         public ?string $secretKey = null,
         public array $events = [],
-        public bool $livemode = false,
+        public ?bool $livemode = null,
         public ?CarbonImmutable $createdAt = null,
         public ?CarbonImmutable $updatedAt = null,
         public array $raw = [],
@@ -46,7 +46,7 @@ final readonly class WebhookEndpoint
             description: Payload::nullableString($data, 'description'),
             secretKey: Payload::nullableString($data, 'secret_key'),
             events: Payload::strings($data, 'events'),
-            livemode: Payload::bool($data, 'livemode'),
+            livemode: Payload::nullableBool($data, 'livemode'),
             createdAt: Payload::dateTime($data, 'created_at'),
             updatedAt: Payload::dateTime($data, 'updated_at'),
             raw: $data,

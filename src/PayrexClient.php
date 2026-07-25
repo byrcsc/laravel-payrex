@@ -44,7 +44,7 @@ use Throwable;
  */
 final class PayrexClient
 {
-    public const VERSION = '0.1.0';
+    public const VERSION = '0.2.0';
 
     /** @var array<class-string, object> */
     private array $resources = [];
@@ -61,7 +61,7 @@ final class PayrexClient
         private readonly int $connectTimeout = 10,
         private readonly int $retryTimes = 1,
         private readonly int $retrySleep = 200,
-        private readonly int $webhookTolerance = 300,
+        private readonly int $webhookTolerance = WebhookSignature::DEFAULT_TOLERANCE,
     ) {}
 
     /*
@@ -174,7 +174,7 @@ final class PayrexClient
 
     /**
      * The status and headers of the most recent PayRex response, including a
-     * failed one — useful for quoting a request identifier to PayRex support
+     * failed one - useful for quoting a request identifier to PayRex support
      * or reading rate-limit counters off a 429.
      *
      * Null before the first request, and null again if the request never got a
@@ -200,7 +200,7 @@ final class PayrexClient
     /**
      * Verifies and decodes a raw webhook body.
      *
-     * The package's own route already does this — reach for it when you are
+     * The package's own route already does this - reach for it when you are
      * writing your own route instead, so the signature check and the decode
      * stay in step with the configured secret and tolerance.
      *

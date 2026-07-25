@@ -7,7 +7,7 @@ namespace ByRcsc\LaravelPayrex\Enums;
 /**
  * What a line of a payout represents.
  *
- * The documented values are `payment`, `refund`, and `adjustment` — see the
+ * The documented values are `payment`, `refund`, and `adjustment` - see the
  * [Payout Transaction resource](https://docs.payrex.com/docs/api/payout_transactions).
  *
  * Resolved with `tryFrom()` when decoding, so a value PayRex adds later

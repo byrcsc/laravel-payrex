@@ -15,7 +15,7 @@ use Generator;
  * Webhook endpoint management.
  *
  * This is the API for registering where PayRex should send events. Receiving
- * those events is handled separately — see the package's webhook route,
+ * those events is handled separately - see the package's webhook route,
  * {@see VerifyPayrexSignature}, and the events under
  * `ByRcsc\LaravelPayrex\Events`.
  */
@@ -25,7 +25,7 @@ final class Webhooks extends Resource
 
     /**
      * Registers an endpoint. The response carries the `secretKey` used to sign
-     * deliveries — store it as `PAYREX_WEBHOOK_SECRET`, because PayRex will not
+     * deliveries - store it as `PAYREX_WEBHOOK_SECRET`, because PayRex will not
      * show it in full again.
      *
      * @param  list<string>  $events

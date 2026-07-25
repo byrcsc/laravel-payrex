@@ -7,14 +7,14 @@
     "net_amount": 9650,
     "currency": "PHP",
     "status": "paid",
-    "description": "Order #1234",
+    "description": "Mar 1 - Apr 1, 2026",
     "payment_intent_id": "pi_3QxSample000001",
     "origin": "checkout_session",
     "refunded": false,
     "livemode": false,
     "billing": {
-        "name": "Ada Lovelace",
-        "email": "ada@example.test",
+        "name": "Joe Dela Cruz",
+        "email": "joe@example.test",
         "address": {
             "line1": "12 Analytical Engine Street",
             "country": "PH"
@@ -23,8 +23,8 @@
     "customer": {
         "resource": "customer",
         "id": "cus_3QxSample000001",
-        "name": "Ada Lovelace",
-        "email": "ada@example.test"
+        "name": "Joe Dela Cruz",
+        "email": "joe@example.test"
     },
     "payment_method": {
         "type": "card",

@@ -83,6 +83,26 @@ it('accepts a delivery inside the tolerance window', function () {
     WebhookSignature::verify($payload, $header, SECRET, tolerance: 300, now: 1753420800 + 120);
 })->throwsNoExceptions();
 
+/*
+ * The default window is tight (5 minutes) rather than spanning PayRex's 3-day
+ * retry period, which is only safe because PayRex re-signs every retry with a
+ * fresh timestamp. These two pin the default at both edges so it cannot drift
+ * silently in either direction.
+ */
+it('accepts by default a delivery just inside the window', function () {
+    $payload = '{"id":"evt_1"}';
+    $header = WebhookSignature::header($payload, SECRET, timestamp: 1753420800);
+
+    WebhookSignature::verify($payload, $header, SECRET, now: 1753420800 + 300);
+})->throwsNoExceptions();
+
+it('rejects by default a delivery just outside the window', function () {
+    $payload = '{"id":"evt_1"}';
+    $header = WebhookSignature::header($payload, SECRET, timestamp: 1753420800);
+
+    WebhookSignature::verify($payload, $header, SECRET, now: 1753420800 + 301);
+})->throws(SignatureVerificationException::class, 'outside the 300 second tolerance');
+
 it('skips the timestamp check when the tolerance is zero', function () {
     $payload = '{"id":"evt_1"}';
     $header = WebhookSignature::header($payload, SECRET, timestamp: 1);
@@ -108,3 +128,9 @@ it('tolerates whitespace around header segments', function () {
         tolerance: 0,
     );
 })->throwsNoExceptions();
+
+it('ships a config default matching the constant', function () {
+    // Four call sites fall back to the constant; the published config carries
+    // its own literal. This is the only thing stopping the two diverging.
+    expect(config('payrex.webhooks.tolerance'))->toBe(WebhookSignature::DEFAULT_TOLERANCE);
+});

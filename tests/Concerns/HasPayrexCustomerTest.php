@@ -21,8 +21,8 @@ function customerBody(string $id = 'cus_3QxSample000001'): array
     return [
         'resource' => 'customer',
         'id' => $id,
-        'name' => 'Ada Lovelace',
-        'email' => 'ada@example.test',
+        'name' => 'Joe Dela Cruz',
+        'email' => 'joe@example.test',
         'currency' => 'PHP',
     ];
 }
@@ -50,21 +50,21 @@ afterEach(function () {
 
 describe('reading the stored id', function () {
     it('reports no customer when the column is empty', function () {
-        $payer = Payer::create(['name' => 'Ada Lovelace', 'email' => 'ada@example.test']);
+        $payer = Payer::create(['name' => 'Joe Dela Cruz', 'email' => 'joe@example.test']);
 
         expect($payer->payrexCustomerId())->toBeNull()
             ->and($payer->hasPayrexCustomerId())->toBeFalse();
     });
 
     it('treats a blank column as no customer', function () {
-        $payer = Payer::create(['name' => 'Ada', 'payrex_customer_id' => '   ']);
+        $payer = Payer::create(['name' => 'Joe', 'payrex_customer_id' => '   ']);
 
         expect($payer->payrexCustomerId())->toBeNull()
             ->and($payer->hasPayrexCustomerId())->toBeFalse();
     });
 
     it('reads the id once one is stored', function () {
-        $payer = Payer::create(['name' => 'Ada', 'payrex_customer_id' => 'cus_1']);
+        $payer = Payer::create(['name' => 'Joe', 'payrex_customer_id' => 'cus_1']);
 
         expect($payer->payrexCustomerId())->toBe('cus_1')
             ->and($payer->hasPayrexCustomerId())->toBeTrue();
@@ -74,7 +74,7 @@ describe('reading the stored id', function () {
 describe('createAsPayrexCustomer', function () {
     it('registers the model and persists the returned id', function () {
         Http::fake(['*' => Http::response(customerBody())]);
-        $payer = Payer::create(['name' => 'Ada Lovelace', 'email' => 'ada@example.test']);
+        $payer = Payer::create(['name' => 'Joe Dela Cruz', 'email' => 'joe@example.test']);
 
         $customer = $payer->createAsPayrexCustomer();
 
@@ -86,15 +86,15 @@ describe('createAsPayrexCustomer', function () {
         Http::assertSent(fn (Request $request) => $request->method() === 'POST'
             && $request->url() === 'https://api.payrexhq.test/customers'
             && formBody($request->body()) === [
-                'name' => 'Ada Lovelace',
-                'email' => 'ada@example.test',
+                'name' => 'Joe Dela Cruz',
+                'email' => 'joe@example.test',
                 'currency' => 'PHP',
             ]);
     });
 
     it('merges extra options over the derived parameters', function () {
         Http::fake(['*' => Http::response(customerBody())]);
-        $payer = Payer::create(['name' => 'Ada', 'email' => 'ada@example.test']);
+        $payer = Payer::create(['name' => 'Joe', 'email' => 'joe@example.test']);
 
         $payer->createAsPayrexCustomer(['metadata' => ['user_id' => '7']]);
 
@@ -103,7 +103,7 @@ describe('createAsPayrexCustomer', function () {
 
     it('refuses to create a second customer for the same model', function () {
         Http::fake(['*' => Http::response(customerBody())]);
-        $payer = Payer::create(['name' => 'Ada', 'payrex_customer_id' => 'cus_existing']);
+        $payer = Payer::create(['name' => 'Joe', 'payrex_customer_id' => 'cus_existing']);
 
         expect(fn () => $payer->createAsPayrexCustomer())
             ->toThrow(CustomerAlreadyCreatedException::class, 'already the PayRex customer [cus_existing]');
@@ -115,7 +115,7 @@ describe('createAsPayrexCustomer', function () {
 describe('asPayrexCustomer', function () {
     it('retrieves the customer behind the model', function () {
         Http::fake(['*' => Http::response(customerBody('cus_stored'))]);
-        $payer = Payer::create(['name' => 'Ada', 'payrex_customer_id' => 'cus_stored']);
+        $payer = Payer::create(['name' => 'Joe', 'payrex_customer_id' => 'cus_stored']);
 
         expect($payer->asPayrexCustomer()->id)->toBe('cus_stored');
 
@@ -125,7 +125,7 @@ describe('asPayrexCustomer', function () {
     });
 
     it('refuses to retrieve a customer the model does not have', function () {
-        $payer = Payer::create(['name' => 'Ada']);
+        $payer = Payer::create(['name' => 'Joe']);
 
         expect(fn () => $payer->asPayrexCustomer())
             ->toThrow(CustomerNotCreatedException::class, 'is not a PayRex customer yet');
@@ -135,7 +135,7 @@ describe('asPayrexCustomer', function () {
 describe('createOrGetPayrexCustomer', function () {
     it('creates one when the model has none', function () {
         Http::fake(['*' => Http::response(customerBody())]);
-        $payer = Payer::create(['name' => 'Ada', 'email' => 'ada@example.test']);
+        $payer = Payer::create(['name' => 'Joe', 'email' => 'joe@example.test']);
 
         $payer->createOrGetPayrexCustomer();
 
@@ -144,7 +144,7 @@ describe('createOrGetPayrexCustomer', function () {
 
     it('retrieves the existing one instead of creating a duplicate', function () {
         Http::fake(['*' => Http::response(customerBody('cus_stored'))]);
-        $payer = Payer::create(['name' => 'Ada', 'payrex_customer_id' => 'cus_stored']);
+        $payer = Payer::create(['name' => 'Joe', 'payrex_customer_id' => 'cus_stored']);
 
         expect($payer->createOrGetPayrexCustomer()->id)->toBe('cus_stored');
 
@@ -156,8 +156,8 @@ describe('updatePayrexCustomer', function () {
     it('pushes the current name and email to PayRex', function () {
         Http::fake(['*' => Http::response(customerBody('cus_stored'))]);
         $payer = Payer::create([
-            'name' => 'Ada King',
-            'email' => 'ada.king@example.test',
+            'name' => 'Joe Dela Cruz-Reyes',
+            'email' => 'joe.reyes@example.test',
             'payrex_customer_id' => 'cus_stored',
         ]);
 
@@ -166,13 +166,13 @@ describe('updatePayrexCustomer', function () {
         Http::assertSent(fn (Request $request) => $request->method() === 'PUT'
             && $request->url() === 'https://api.payrexhq.test/customers/cus_stored'
             && formBody($request->body()) === [
-                'name' => 'Ada King',
-                'email' => 'ada.king@example.test',
+                'name' => 'Joe Dela Cruz-Reyes',
+                'email' => 'joe.reyes@example.test',
             ]);
     });
 
     it('refuses to update a customer the model does not have', function () {
-        $payer = Payer::create(['name' => 'Ada']);
+        $payer = Payer::create(['name' => 'Joe']);
 
         expect(fn () => $payer->updatePayrexCustomer())->toThrow(CustomerNotCreatedException::class);
     });
@@ -181,7 +181,7 @@ describe('updatePayrexCustomer', function () {
 describe('deleteAsPayrexCustomer', function () {
     it('deletes the customer and clears the stored id', function () {
         Http::fake(['*' => Http::response(['id' => 'cus_stored', 'deleted' => true])]);
-        $payer = Payer::create(['name' => 'Ada', 'payrex_customer_id' => 'cus_stored']);
+        $payer = Payer::create(['name' => 'Joe', 'payrex_customer_id' => 'cus_stored']);
 
         $deleted = $payer->deleteAsPayrexCustomer();
 
@@ -194,7 +194,7 @@ describe('deleteAsPayrexCustomer', function () {
     });
 
     it('refuses to delete a customer the model does not have', function () {
-        $payer = Payer::create(['name' => 'Ada']);
+        $payer = Payer::create(['name' => 'Joe']);
 
         expect(fn () => $payer->deleteAsPayrexCustomer())->toThrow(CustomerNotCreatedException::class);
     });
@@ -206,7 +206,7 @@ describe('payrexPaymentMethods', function () {
             'data' => [['resource' => 'payment_method', 'id' => 'pm_1', 'type' => 'card']],
             'has_more' => false,
         ])]);
-        $payer = Payer::create(['name' => 'Ada', 'payrex_customer_id' => 'cus_stored']);
+        $payer = Payer::create(['name' => 'Joe', 'payrex_customer_id' => 'cus_stored']);
 
         expect($payer->payrexPaymentMethods()->first()?->id)->toBe('pm_1');
 

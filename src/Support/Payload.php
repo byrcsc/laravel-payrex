@@ -13,7 +13,7 @@ use Throwable;
  *
  * The API is free to add fields, drop optional ones, or return a value this
  * package has not seen before. Every reader here degrades to a default rather
- * than throwing, so a payload surprise never costs the caller their response —
+ * than throwing, so a payload surprise never costs the caller their response -
  * the untouched body is always kept on the DTO's `$raw` property.
  */
 final class Payload
@@ -72,6 +72,24 @@ final class Payload
             $value === 1, $value === '1', $value === 'true' => true,
             $value === 0, $value === '0', $value === 'false' => false,
             default => $default,
+        };
+    }
+
+    /**
+     * As {@see self::bool()}, but yields `null` for an absent or unreadable
+     * value instead of a default, so "not sent" stays distinct from `false`.
+     *
+     * @param  array<array-key, mixed>  $data
+     */
+    public static function nullableBool(array $data, string $key): ?bool
+    {
+        $value = $data[$key] ?? null;
+
+        return match (true) {
+            is_bool($value) => $value,
+            $value === 1, $value === '1', $value === 'true' => true,
+            $value === 0, $value === '0', $value === 'false' => false,
+            default => null,
         };
     }
 

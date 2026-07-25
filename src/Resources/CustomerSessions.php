@@ -7,7 +7,7 @@ namespace ByRcsc\LaravelPayrex\Resources;
 use ByRcsc\LaravelPayrex\Data\CustomerSession;
 
 /**
- * Customer sessions — short-lived client secrets for PayRex embedded
+ * Customer sessions - short-lived client secrets for PayRex embedded
  * components, letting a customer manage their own saved payment methods.
  */
 final class CustomerSessions extends Resource

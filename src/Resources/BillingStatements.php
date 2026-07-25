@@ -13,7 +13,7 @@ use ByRcsc\LaravelPayrex\Support\PayrexCursorPaginator;
 use Generator;
 
 /**
- * Billing statements — itemised bills PayRex can send to a customer.
+ * Billing statements - itemised bills PayRex can send to a customer.
  *
  * The lifecycle is: create a draft, add line items with
  * {@see BillingStatementLineItems}, `finalize()` to lock it, then `send()` it.
@@ -146,6 +146,15 @@ final class BillingStatements extends Resource
     /**
      * Locks the statement's contents and makes it payable.
      *
+     * The statement must already have a `due_at` or PayRex answers 400
+     * `parameter_required`, and `create()` cannot set one - it is dropped from
+     * a create request. The working sequence is:
+     *
+     *     $statement = $payrex->billingStatements()->create(customerId: $id);
+     *     $payrex->billingStatementLineItems()->create(...);
+     *     $payrex->billingStatements()->update($statement->id, dueAt: $timestamp);
+     *     $payrex->billingStatements()->finalize($statement->id);
+     *
      * @param  array<string, mixed>  $options
      */
     public function finalize(string $id, array $options = []): BillingStatement
@@ -154,8 +163,11 @@ final class BillingStatements extends Resource
     }
 
     /**
-     * Emails the statement to the customer. The API reference documents a
-     * resource response, while the official SDK permits an empty response.
+     * Emails the statement to the customer.
+     *
+     * Returns `null`: PayRex answers 204 with an empty body. The return type
+     * stays nullable so a change to return the resource would not break
+     * callers.
      *
      * @param  array<string, mixed>  $options
      */

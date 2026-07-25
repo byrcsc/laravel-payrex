@@ -5,8 +5,8 @@
         {
             "resource": "customer",
             "id": "cus_3QxSample000001",
-            "name": "Ada Lovelace",
-            "email": "ada@example.test"
+            "name": "Joe Dela Cruz",
+            "email": "joe@example.test"
         },
         {
             "resource": "customer",

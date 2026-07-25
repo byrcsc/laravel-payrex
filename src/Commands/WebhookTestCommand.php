@@ -26,7 +26,7 @@ use function Laravel\Prompts\search;
  * This is a wiring test, not a payload test. Nothing here goes over the
  * network and no signature is involved: the event is built in-process and
  * handed straight to the dispatcher, exactly as the webhook controller would.
- * The resource body is deliberately thin — enough for the DTOs to hydrate, not
+ * The resource body is deliberately thin - enough for the DTOs to hydrate, not
  * a faithful copy of what PayRex sends.
  */
 final class WebhookTestCommand extends Command

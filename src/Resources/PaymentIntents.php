@@ -13,7 +13,7 @@ use ByRcsc\LaravelPayrex\Exceptions\InvalidRequestException;
 use InvalidArgumentException;
 
 /**
- * Payment intents — https://api.payrexhq.com/payment_intents
+ * Payment intents - https://api.payrexhq.com/payment_intents
  */
 final class PaymentIntents extends Resource
 {
@@ -38,14 +38,14 @@ final class PaymentIntents extends Resource
      * Creates an intent to collect `$amount` from a payer.
      *
      * Amounts are in the currency's smallest unit, so `10000` is ₱100.00, and
-     * must fall within PayRex's documented ₱20–₱59,999,999.99 range. An amount
+     * must fall within PayRex's documented ₱20 to ₱59,999,999.99 range. An amount
      * the API rejects for any other reason comes back as an
      * {@see InvalidRequestException}.
      *
      * `$paymentMethodOptions` is keyed by {@see PaymentMethodType}, e.g.
      * `['card' => ['capture_type' => CaptureType::Manual]]` or
      * `['bdo_installment' => ['installment_types' => [InstallmentType::Zero]]]`
-     * — note that `installment_types` is a list. Enum values are unwrapped on
+     * - note that `installment_types` is a list. Enum values are unwrapped on
      * the way out, so plain strings work equally well.
      *
      * @param  list<PaymentMethodType|string>  $paymentMethods

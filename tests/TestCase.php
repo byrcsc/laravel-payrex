@@ -21,7 +21,7 @@ abstract class TestCase extends Orchestra
      * Config applied before the app boots.
      *
      * Set this and call `refreshApplication()` to test anything decided at boot
-     * time, such as route registration — a plain `config()->set()` lands too
+     * time, such as route registration - a plain `config()->set()` lands too
      * late for that, and is discarded by the rebuild.
      *
      * @var array<string, mixed>

@@ -8,7 +8,7 @@ use ByRcsc\LaravelPayrex\Data\SetupIntent;
 use ByRcsc\LaravelPayrex\Enums\PaymentMethodType;
 
 /**
- * Setup intents — saving a payment method for later without charging it.
+ * Setup intents - saving a payment method for later without charging it.
  */
 final class SetupIntents extends Resource
 {
