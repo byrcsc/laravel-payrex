@@ -18,21 +18,21 @@ final class WebhookUpdateCommand extends Command
 
     public function handle(): int
     {
-        $url = $this->option('url');
-        $description = $this->option('description');
-        $events = array_values(array_filter((array) $this->option('event'), is_string(...)));
+        $url = $this->stringOption('url');
+        $description = $this->stringOption('description');
+        $events = $this->stringArrayOption('event');
 
-        if (! is_string($url) && ! is_string($description) && $events === []) {
+        if ($url === null && $description === null && $events === []) {
             $this->components->error('Nothing to update. Pass at least one of --url, --event, or --description.');
 
             return self::FAILURE;
         }
 
         $endpoint = $this->attempt(fn (): WebhookEndpoint => $this->payrex()->webhooks()->update(
-            (string) $this->argument('id'),
-            url: is_string($url) ? $url : null,
+            $this->stringArgument('id'),
+            url: $url,
             events: $events === [] ? null : $events,
-            description: is_string($description) ? $description : null,
+            description: $description,
         ));
 
         if ($endpoint === null) {

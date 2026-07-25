@@ -42,6 +42,35 @@ abstract class Command extends BaseCommand
         }
     }
 
+    /**
+     * A required string argument.
+     *
+     * Symfony types arguments as `mixed` because a signature may declare an
+     * array one. Every argument here is a required scalar, so the fallback is
+     * unreachable — it exists to keep the narrowing out of each command.
+     */
+    protected function stringArgument(string $key): string
+    {
+        $value = $this->argument($key);
+
+        return is_string($value) ? $value : '';
+    }
+
+    protected function stringOption(string $key): ?string
+    {
+        $value = $this->option($key);
+
+        return is_string($value) ? $value : null;
+    }
+
+    /**
+     * @return list<string>
+     */
+    protected function stringArrayOption(string $key): array
+    {
+        return array_values(array_filter((array) $this->option($key), is_string(...)));
+    }
+
     protected function renderEndpoint(WebhookEndpoint $endpoint): void
     {
         $this->components->twoColumnDetail('ID', $endpoint->id);

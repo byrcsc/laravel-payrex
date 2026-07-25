@@ -16,7 +16,7 @@ final class WebhookDeleteCommand extends Command
 
     public function handle(): int
     {
-        $id = (string) $this->argument('id');
+        $id = $this->stringArgument('id');
 
         if ($this->option('force') !== true && ! $this->confirmToProceed($id)) {
             $this->components->warn('Nothing was deleted.');

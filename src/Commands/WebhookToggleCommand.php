@@ -26,7 +26,7 @@ final class WebhookToggleCommand extends Command
             return self::FAILURE;
         }
 
-        $id = (string) $this->argument('id');
+        $id = $this->stringArgument('id');
         $webhooks = $this->payrex()->webhooks();
 
         $endpoint = $this->attempt(fn (): WebhookEndpoint => $enable

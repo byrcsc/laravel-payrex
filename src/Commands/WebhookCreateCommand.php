@@ -27,12 +27,10 @@ final class WebhookCreateCommand extends Command
             return self::FAILURE;
         }
 
-        $description = $this->option('description');
-
         $endpoint = $this->attempt(fn (): WebhookEndpoint => $this->payrex()->webhooks()->create(
-            url: (string) $this->argument('url'),
+            url: $this->stringArgument('url'),
             events: $events,
-            description: is_string($description) ? $description : null,
+            description: $this->stringOption('description'),
         ));
 
         if ($endpoint === null) {
@@ -60,7 +58,7 @@ final class WebhookCreateCommand extends Command
      */
     private function events(): array
     {
-        $events = array_values(array_filter((array) $this->option('event'), is_string(...)));
+        $events = $this->stringArrayOption('event');
 
         if ($events !== []) {
             return $events;
