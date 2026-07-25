@@ -21,7 +21,7 @@ use Illuminate\Http\Request;
  * runs, so a payload reaching here is trusted.
  *
  * Two events fire for every delivery: the generic {@see PayrexWebhookReceived},
- * and — when the type is mapped in `config('payrex.webhooks.events')` — a class
+ * and - when the type is mapped in `config('payrex.webhooks.events')` - a class
  * specific to that type. Do the actual work in queued listeners; PayRex expects
  * a prompt response and will retry a slow one.
  */

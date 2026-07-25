@@ -8,7 +8,7 @@ use ByRcsc\LaravelPayrex\Data\Listing;
 use ByRcsc\LaravelPayrex\Data\PayoutTransaction;
 
 /**
- * Payouts — transfers of settled funds to the merchant's bank account.
+ * Payouts - transfers of settled funds to the merchant's bank account.
  *
  * Only the transactions endpoint is exposed, because that is the only payout
  * endpoint the official PayRex SDK implements. Reach anything else through

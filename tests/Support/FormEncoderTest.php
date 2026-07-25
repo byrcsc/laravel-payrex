@@ -57,15 +57,15 @@ it('preserves string keys on nested objects', function () {
 it('encodes a list of objects the way rack expects', function () {
     $encoded = FormEncoder::encode([
         'line_items' => [
-            ['name' => 'Sticker pack', 'amount' => 10000],
-            ['name' => 'Mug', 'amount' => 25000],
+            ['name' => 'Basic', 'amount' => 10000],
+            ['name' => 'Additional seat', 'amount' => 25000],
         ],
     ]);
 
     expect(urldecode($encoded))->toBe(
-        'line_items[][name]=Sticker pack'
+        'line_items[][name]=Basic'
         .'&line_items[][amount]=10000'
-        .'&line_items[][name]=Mug'
+        .'&line_items[][name]=Additional seat'
         .'&line_items[][amount]=25000'
     );
 });

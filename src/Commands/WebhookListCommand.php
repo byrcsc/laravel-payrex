@@ -44,8 +44,8 @@ final class WebhookListCommand extends Command
             ['ID', 'URL', 'Status', 'Mode', 'Events'],
             array_map(fn (WebhookEndpoint $endpoint): array => [
                 $endpoint->id,
-                $endpoint->url ?? '—',
-                $endpoint->status->value ?? '—',
+                $endpoint->url ?? '-',
+                $endpoint->status->value ?? '-',
                 $endpoint->livemode ? 'live' : 'test',
                 (string) count($endpoint->events),
             ], $endpoints),

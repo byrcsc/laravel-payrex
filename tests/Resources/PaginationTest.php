@@ -92,7 +92,7 @@ describe('autoPaging', function () {
         Http::assertSentCount(1);
     });
 
-    it('is lazy — nothing is fetched until the generator is iterated', function () {
+    it('is lazy - nothing is fetched until the generator is iterated', function () {
         Http::fake(['*' => Http::response(customerPage(['cus_1'], hasMore: false))]);
 
         Payrex::customers()->autoPaging();

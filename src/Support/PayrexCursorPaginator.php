@@ -13,7 +13,7 @@ use Illuminate\Pagination\CursorPaginator;
  * Laravel's own paginator infers that by asking the data source for one row
  * more than the page size and seeing whether it arrives. PayRex answers the
  * question outright with `has_more`, so this fetches exactly one page and uses
- * that flag instead — which also keeps the requested `limit` inside whatever
+ * that flag instead - which also keeps the requested `limit` inside whatever
  * ceiling PayRex enforces on it.
  *
  * @template TValue of object

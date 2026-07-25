@@ -8,7 +8,7 @@ namespace ByRcsc\LaravelPayrex\Support;
  * Encodes request parameters the way the PayRex API expects them.
  *
  * PayRex accepts `application/x-www-form-urlencoded` bodies and parses lists
- * from repeated bracket pairs — `payment_methods[]=card&payment_methods[]=gcash`.
+ * from repeated bracket pairs - `payment_methods[]=card&payment_methods[]=gcash`.
  * PHP's `http_build_query()` emits numeric indices instead (`payment_methods[0]=card`),
  * which the API reads as a keyed object rather than a list, so the indices are
  * stripped back out. Nested string keys such as `metadata[order_id]` are left alone.

@@ -45,7 +45,7 @@ use ByRcsc\LaravelPayrex\Facades\Payrex;
 $intent = Payrex::paymentIntents()->create(
     amount: 10_000,          // ₱100.00, smallest currency unit
     paymentMethods: ['card', 'gcash'],
-    description: 'Order #1234',
+    description: 'Mar 1 - Apr 1, 2026',
 );
 
 $intent->id;         // "pi_..."
@@ -60,10 +60,12 @@ $session = Payrex::checkoutSessions()->create(
     currency: Currency::PHP,
     paymentMethods: ['card', 'gcash'],
     lineItems: [
-        ['name' => 'Sticker pack', 'amount' => 10_000, 'quantity' => 1],
+        // Quantity is the seat count, amount the per-seat price.
+        ['name' => 'Basic, 1 year', 'amount' => 100_000, 'quantity' => 5],
     ],
-    successUrl: route('checkout.success'),
-    cancelUrl: route('checkout.cancel'),
+    description: 'Mar 1, 2026 - Mar 1, 2027',
+    successUrl: route('billing.success'),
+    cancelUrl: route('billing.cancel'),
 );
 
 return redirect()->away($session->url);
@@ -71,6 +73,15 @@ return redirect()->away($session->url);
 
 **Amounts are integers in the smallest unit.** `10_000` is ₱100.00. Never pass a
 float. PayRex supports only `Currency::PHP` today.
+
+**PayRex has no subscription resource,** so nothing here renews on its own. The
+examples above are single payments: an annual plan bought upfront. The
+straightforward way to bill a recurring plan is a billing statement per cycle.
+
+PayRex also supports storing a payment method with a setup intent: the card goes
+to PayRex and your app keeps only a `pm_...` token, never card details. Charging
+that token unattended is a separate question. Confirm off-session support and
+your recurring-charge consent obligations with PayRex before relying on it.
 
 ## Resources
 
@@ -97,7 +108,7 @@ Payrex::paymentIntents()->create(
 | `refunds()` | `create` `update` |
 | `payouts()` | `listTransactions` |
 | `billingStatements()` | `create` `retrieve` `update` `delete` `list` `autoPaging` `paginate` `finalize` `send` `void` `markUncollectible` |
-| `billingStatementLineItems()` | `create` `retrieve` `update` `delete` |
+| `billingStatementLineItems()` | `create` `update` `delete` - PayRex has no retrieve route; read line items from the parent statement's `lineItems` |
 | `webhooks()` | `create` `retrieve` `update` `delete` `list` `autoPaging` `paginate` `enable` `disable` |
 
 ## Webhooks
@@ -112,20 +123,21 @@ class when the type is mapped in `config('payrex.webhooks.events')`.
 ```php
 use ByRcsc\LaravelPayrex\Events\PaymentIntentSucceeded;
 
-class FulfillOrder implements ShouldQueue
+class ActivateSeats implements ShouldQueue
 {
     public function handle(PaymentIntentSucceeded $event): void
     {
         $intent = $event->event->paymentIntent();
 
-        Order::where('payment_intent_id', $intent->id)->update(['paid' => true]);
+        Subscription::where('payment_intent_id', $intent->id)->update(['seats_active' => true]);
     }
 }
 ```
 
-Queue your listeners. PayRex retries a slow response. Deduplicate on the event
-ID too: the freshness window is not replay protection, and a valid delivery can
-arrive twice.
+Queue your listeners. PayRex retries a failed or slow delivery for up to three
+days with exponential backoff, so **deduplicate on the event ID**: a valid
+delivery can arrive more than once, and the freshness window is not replay
+protection.
 
 ## Errors
 
@@ -181,9 +193,13 @@ vulnerability in *PayRex itself* goes to PayRex.
   check replaces CSRF. Please do not "fix" this.
 - **The webhook route is public until the signature check runs.** Throttle it on
   a busy host: `'middleware' => ['throttle:60,1']` in `config/payrex.php`.
-- **`webhooks.tolerance = 0` removes the freshness window**, so a payload
-  captured months ago still verifies. Leave the default; keep listeners
-  idempotent regardless.
+- **`webhooks.tolerance` defaults to 300 seconds**, which is safe because PayRex
+  re-signs every retry with a fresh timestamp, so a stale delivery is never a
+  real retry being turned away. Raise it if your clock can drift further than
+  that ahead of PayRex's; `tolerance = 0` removes the check entirely. The window
+  is not the replay defence in any case: HMAC prevents forgery, so it only
+  bounds replay of a captured, validly-signed body. **Deduplicate on the event
+  ID** - that is what makes replay harmless.
 
 ## Contributing
 

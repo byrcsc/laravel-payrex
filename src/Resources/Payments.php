@@ -7,7 +7,7 @@ namespace ByRcsc\LaravelPayrex\Resources;
 use ByRcsc\LaravelPayrex\Data\Payment;
 
 /**
- * Payments — the charges produced by payment intents.
+ * Payments - the charges produced by payment intents.
  *
  * Payments are created by charging a payment intent, never directly, so this
  * resource is read-and-annotate only.

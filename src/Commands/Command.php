@@ -13,7 +13,7 @@ use Illuminate\Console\Command as BaseCommand;
  * Shared plumbing for the package's Artisan commands.
  *
  * A PayRex error is reported as a failed command rather than an uncaught
- * exception — a stack trace tells an operator nothing the API's own message
+ * exception - a stack trace tells an operator nothing the API's own message
  * does not say better.
  */
 abstract class Command extends BaseCommand
@@ -47,7 +47,7 @@ abstract class Command extends BaseCommand
      *
      * Symfony types arguments as `mixed` because a signature may declare an
      * array one. Every argument here is a required scalar, so the fallback is
-     * unreachable — it exists to keep the narrowing out of each command.
+     * unreachable - it exists to keep the narrowing out of each command.
      */
     protected function stringArgument(string $key): string
     {
@@ -74,13 +74,13 @@ abstract class Command extends BaseCommand
     protected function renderEndpoint(WebhookEndpoint $endpoint): void
     {
         $this->components->twoColumnDetail('ID', $endpoint->id);
-        $this->components->twoColumnDetail('URL', $endpoint->url ?? '—');
-        $this->components->twoColumnDetail('Status', $endpoint->status->value ?? '—');
-        $this->components->twoColumnDetail('Description', $endpoint->description ?? '—');
+        $this->components->twoColumnDetail('URL', $endpoint->url ?? '-');
+        $this->components->twoColumnDetail('Status', $endpoint->status->value ?? '-');
+        $this->components->twoColumnDetail('Description', $endpoint->description ?? '-');
         $this->components->twoColumnDetail('Mode', $endpoint->livemode ? 'live' : 'test');
         $this->components->twoColumnDetail(
             'Events',
-            $endpoint->events === [] ? '—' : implode(', ', $endpoint->events),
+            $endpoint->events === [] ? '-' : implode(', ', $endpoint->events),
         );
     }
 }

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * The default event map must match the documented catalog exactly — no
+ * The default event map must match the documented catalog exactly - no
  * invented types, none missed.
  * https://docs.payrex.com/docs/api/events/event_types (verified 2026-07-25)
  */
