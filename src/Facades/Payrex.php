@@ -4,30 +4,44 @@ declare(strict_types=1);
 
 namespace ByRcsc\LaravelPayrex\Facades;
 
+use ByRcsc\LaravelPayrex\Data\ApiResponseMetadata;
+use ByRcsc\LaravelPayrex\Data\WebhookEvent;
 use ByRcsc\LaravelPayrex\PayrexClient;
+use ByRcsc\LaravelPayrex\Resources\BillingStatementLineItems;
+use ByRcsc\LaravelPayrex\Resources\BillingStatements;
+use ByRcsc\LaravelPayrex\Resources\CheckoutSessions;
+use ByRcsc\LaravelPayrex\Resources\Customers;
+use ByRcsc\LaravelPayrex\Resources\CustomerSessions;
+use ByRcsc\LaravelPayrex\Resources\PaymentIntents;
+use ByRcsc\LaravelPayrex\Resources\Payments;
+use ByRcsc\LaravelPayrex\Resources\Payouts;
+use ByRcsc\LaravelPayrex\Resources\Refunds;
+use ByRcsc\LaravelPayrex\Resources\SetupIntents;
+use ByRcsc\LaravelPayrex\Resources\Webhooks;
+use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @method static \ByRcsc\LaravelPayrex\Resources\PaymentIntents paymentIntents()
- * @method static \ByRcsc\LaravelPayrex\Resources\CheckoutSessions checkoutSessions()
- * @method static \ByRcsc\LaravelPayrex\Resources\SetupIntents setupIntents()
- * @method static \ByRcsc\LaravelPayrex\Resources\Customers customers()
- * @method static \ByRcsc\LaravelPayrex\Resources\CustomerSessions customerSessions()
- * @method static \ByRcsc\LaravelPayrex\Resources\Payments payments()
- * @method static \ByRcsc\LaravelPayrex\Resources\Refunds refunds()
- * @method static \ByRcsc\LaravelPayrex\Resources\Payouts payouts()
- * @method static \ByRcsc\LaravelPayrex\Resources\BillingStatements billingStatements()
- * @method static \ByRcsc\LaravelPayrex\Resources\BillingStatementLineItems billingStatementLineItems()
- * @method static \ByRcsc\LaravelPayrex\Resources\Webhooks webhooks()
+ * @method static PaymentIntents paymentIntents()
+ * @method static CheckoutSessions checkoutSessions()
+ * @method static SetupIntents setupIntents()
+ * @method static Customers customers()
+ * @method static CustomerSessions customerSessions()
+ * @method static Payments payments()
+ * @method static Refunds refunds()
+ * @method static Payouts payouts()
+ * @method static BillingStatements billingStatements()
+ * @method static BillingStatementLineItems billingStatementLineItems()
+ * @method static Webhooks webhooks()
  * @method static array<string, mixed> get(string $uri, array<string, mixed> $params = [])
  * @method static array<string, mixed> post(string $uri, array<string, mixed> $params = [])
  * @method static array<string, mixed> put(string $uri, array<string, mixed> $params = [])
  * @method static array<string, mixed> delete(string $uri, array<string, mixed> $params = [])
  * @method static string baseUrl()
- * @method static string|null publicKey()
- * @method static \ByRcsc\LaravelPayrex\Data\ApiResponseMetadata|null lastResponse()
- * @method static \ByRcsc\LaravelPayrex\Data\WebhookEvent parseEvent(string $payload, ?string $header)
- * @method static \Illuminate\Http\Client\PendingRequest pendingRequest()
+ * @method static ?string publicKey()
+ * @method static ?ApiResponseMetadata lastResponse()
+ * @method static WebhookEvent parseEvent(string $payload, ?string $header)
+ * @method static PendingRequest pendingRequest()
  *
  * @see PayrexClient
  */
