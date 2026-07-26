@@ -25,14 +25,8 @@ redirected.
 
 ## Supported versions
 
-| Version | Supported |
-|---|---|
-| `0.x` | ✅ latest `0.x` only |
-
-Until `1.0.0`, fixes land on the newest release rather than being backported.
-Under a `^0.1.0`-style constraint the **minor** slot is the breaking one, so a
-security fix may arrive as `0.2.0` rather than `0.1.1`. Pin accordingly, and
-prefer tracking the latest `0.x`.
+Security fixes are released for the latest package version and are not
+backported. Keep your dependency constraint current.
 
 ## What this package does and does not protect
 

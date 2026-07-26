@@ -5,17 +5,19 @@
 [![GitHub PHPStan Action Status](https://img.shields.io/github/actions/workflow/status/byrcsc/laravel-payrex/phpstan.yml?branch=main&label=phpstan&style=flat-square)](https://github.com/byrcsc/laravel-payrex/actions?query=workflow%3APHPStan+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/byrcsc/laravel-payrex.svg?style=flat-square)](https://packagist.org/packages/byrcsc/laravel-payrex)
 
-A Laravel SDK for the [PayRex](https://payrexhq.com) payments API: typed
+An unofficial Laravel SDK for the [PayRex](https://payrexhq.com) payments API: typed
 resources, readonly DTOs, and webhook handling that feels like the rest of your
 app.
 
-I built this for my own projects, then cleaned it up to share. Taking payments
-in the Philippines shouldn't mean writing the same client for every app.
+Built for Laravel projects accepting payments in the Philippines and shared
+with the community, it brings PayRex's documented API into familiar Laravel
+conventions.
 
-This is an unofficial first release, so expect a few rough edges. If something
-breaks, or PayRex returns something the package doesn't model yet, open an issue
-and I'll fix it. Pull requests are welcome. Questions about the PayRex API itself
-should go to PayRex.
+Need help using the package? Start a
+[GitHub discussion](https://github.com/byrcsc/laravel-payrex/discussions).
+Found a bug or an API response that is not modelled yet? Open an issue with a
+minimal reproduction or sanitized response. Pull requests are welcome. For
+PayRex account or API questions, contact PayRex directly.
 
 | Requires | Versions |
 |---|---|
@@ -33,6 +35,14 @@ php artisan vendor:publish --tag="payrex-config"
 PAYREX_SECRET_KEY=sk_test_...
 PAYREX_PUBLIC_KEY=pk_test_...      # only for PayRex Elements in the browser
 PAYREX_WEBHOOK_SECRET=whsk_test_...
+```
+
+If you use `HasPayrexCustomer`, publish its migration and review the target
+table before running it. The migration uses `users` by default.
+
+```bash
+php artisan vendor:publish --tag="payrex-migrations"
+php artisan migrate
 ```
 
 ## Quick start
@@ -56,6 +66,8 @@ $intent->clientSecret;
 Hosted checkout, if you would rather not build a payment form:
 
 ```php
+use ByRcsc\LaravelPayrex\Enums\Currency;
+
 $session = Payrex::checkoutSessions()->create(
     currency: Currency::PHP,
     paymentMethods: ['card', 'gcash'],
@@ -110,6 +122,10 @@ Payrex::paymentIntents()->create(
 | `billingStatements()` | `create` `retrieve` `update` `delete` `list` `autoPaging` `paginate` `finalize` `send` `void` `markUncollectible` |
 | `billingStatementLineItems()` | `create` `update` `delete` - PayRex has no retrieve route; read line items from the parent statement's `lineItems` |
 | `webhooks()` | `create` `retrieve` `update` `delete` `list` `autoPaging` `paginate` `enable` `disable` |
+
+PayRex can return a deleted customer as an HTTP `200` tombstone instead of a
+`404`. Call `$customer->isDeleted()` after retrieving a customer that may have
+been deleted outside your application.
 
 ## Webhooks
 
@@ -176,7 +192,8 @@ rule is server-side.
 - `parseEvent()` for verifying webhooks on your own route.
 - `Payrex::publicKey()` for Elements; the secret key has no accessor by design.
 - `lastResponse()` for the status and headers of the most recent call.
-- `Http::fake()` works throughout; `PAYREX_BASE_URL` points at a sandbox.
+- `Http::fake()` works throughout; override `PAYREX_BASE_URL` for a proxy or
+  local stub.
 - Every DTO keeps its untouched payload on `$raw`, and enums decode with
   `tryFrom()`, so a value PayRex adds later yields `null` instead of throwing.
 
@@ -188,24 +205,31 @@ vulnerability in *PayRex itself* goes to PayRex.
 - **The secret key is server-side only.** Sent as HTTP Basic auth on every
   request; never let it reach a browser, bundle, or log. Only `publicKey()` is
   safe to hand out.
-- **The webhook route has no CSRF token, on purpose.** It sits outside the `web`
-  group because a machine-to-machine callback carries no session. The signature
-  check replaces CSRF. Please do not "fix" this.
+- **The webhook route intentionally has no CSRF token.** It sits outside the
+  `web` group because a machine-to-machine callback carries no session. The
+  signature check authenticates the request instead.
 - **The webhook route is public until the signature check runs.** Throttle it on
   a busy host: `'middleware' => ['throttle:60,1']` in `config/payrex.php`.
-- **`webhooks.tolerance` defaults to 300 seconds**, which is safe because PayRex
-  re-signs every retry with a fresh timestamp, so a stale delivery is never a
-  real retry being turned away. Raise it if your clock can drift further than
-  that ahead of PayRex's; `tolerance = 0` removes the check entirely. The window
-  is not the replay defence in any case: HMAC prevents forgery, so it only
-  bounds replay of a captured, validly-signed body. **Deduplicate on the event
-  ID** - that is what makes replay harmless.
+- **`webhooks.tolerance` defaults to 300 seconds.** Keep your server clock
+  synchronized with PayRex. Raising the tolerance accepts older signed
+  deliveries; setting it to `0` disables the freshness check. In every case,
+  **deduplicate on the event ID**.
+
+## Testing
+
+The test suite needs no external database, `.env` file, or PayRex account.
+
+```bash
+composer install
+composer test
+composer analyse
+vendor/bin/pint --test
+```
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). `composer test`, `composer analyse`, and
-`composer format` all have to stay green; PHPStan runs at level max with no
-baseline.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for setup details, design conventions,
+and pull request guidance.
 
 ## Credits
 
