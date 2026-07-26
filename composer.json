@@ -2,12 +2,14 @@
     "name": "byrcsc/laravel-payrex",
     "description": "Unofficial PayRex SDK for Laravel: typed resources, readonly DTOs, and first-class webhook handling.",
     "keywords": [
-        "byrcsc",
         "laravel",
         "payrex",
         "payments",
         "payment-gateway",
+        "payment-processing",
+        "webhooks",
         "philippines",
+        "sdk",
         "gcash"
     ],
     "homepage": "https://github.com/byrcsc/laravel-payrex",
@@ -78,8 +80,9 @@
     },
     "support": {
         "issues": "https://github.com/byrcsc/laravel-payrex/issues",
+        "forum": "https://github.com/byrcsc/laravel-payrex/discussions",
+        "docs": "https://github.com/byrcsc/laravel-payrex#readme",
+        "security": "https://github.com/byrcsc/laravel-payrex/security/policy",
         "source": "https://github.com/byrcsc/laravel-payrex"
-    },
-    "minimum-stability": "stable",
-    "prefer-stable": true
+    }
 }
