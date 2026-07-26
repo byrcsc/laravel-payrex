@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ByRcsc\LaravelPayrex\Commands;
 
+use BackedEnum;
 use ByRcsc\LaravelPayrex\Data\WebhookEvent;
 use ByRcsc\LaravelPayrex\Enums\BillingStatementStatus;
 use ByRcsc\LaravelPayrex\Enums\CheckoutSessionStatus;
@@ -35,7 +36,7 @@ final class WebhookTestCommand extends Command
      * Status enums by resource, so a synthetic event can carry a status that
      * really exists rather than one invented to look plausible.
      *
-     * @var array<string, class-string<\BackedEnum>>
+     * @var array<string, class-string<BackedEnum>>
      */
     private const STATUSES = [
         'payment_intent' => PaymentIntentStatus::class,

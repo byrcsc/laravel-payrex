@@ -95,6 +95,8 @@ describe('Customer', function () {
             ->and($customer->billing?->address?->country)->toBe('PH')
             ->and($customer->billingStatementPrefix)->toBe('ACME')
             ->and($customer->nextBillingStatementSequenceNumber)->toBe('0007')
+            ->and($customer->deleted)->toBeFalse()
+            ->and($customer->isDeleted())->toBeFalse()
             ->and($customer->livemode)->toBeFalse()
             ->and($customer->metadata)->toBe(['user_id' => '42'])
             ->and($customer->createdAt?->getTimestamp())->toBe(1753420800)
@@ -106,6 +108,16 @@ describe('Customer', function () {
             ->toBe('Joe')
             ->and(Customer::from(['id' => 'cus_1', 'billing_details' => ['name' => 'Joe']])->billing)
             ->toBeNull();
+    });
+
+    it('distinguishes a deleted customer returned from retrieve', function () {
+        $customer = Customer::from(payload('customer_deleted'));
+
+        expect($customer->id)->toBe('cus_3QxSampleDeleted001')
+            ->and($customer->deleted)->toBeTrue()
+            ->and($customer->isDeleted())->toBeTrue()
+            ->and($customer->name)->toBeNull()
+            ->and($customer->raw)->toBe(payload('customer_deleted'));
     });
 });
 
@@ -138,6 +150,11 @@ describe('PaymentMethod', function () {
 
         expect($method->type)->toBeNull()
             ->and($method->raw['type'])->toBe('some_future_wallet');
+    });
+
+    it('enumerates only currently documented payment methods', function () {
+        expect(array_map(fn (PaymentMethodType $type): string => $type->value, PaymentMethodType::cases()))
+            ->toBe(['card', 'gcash', 'maya', 'qrph', 'bdo_installment']);
     });
 });
 
@@ -324,15 +341,20 @@ describe('CheckoutSession', function () {
 
 describe('CustomerSession', function () {
     it('maps every field', function () {
-        $session = CustomerSession::from(payload('customer_session'));
+        $payload = payload('customer_session');
+        $session = CustomerSession::from($payload);
 
         expect($session->id)->toBe('cuss_3QxSample000007')
             ->and($session->clientSecret)->toBe('cuss_3QxSample000007_secret_ghi789')
+            ->and($session->customerId)->toBe('cus_3QxSample000001')
             ->and($session->customer?->id)->toBe('cus_3QxSample000001')
             ->and($session->components)->toBe([['name' => 'payment_method_list', 'enabled' => true]])
             ->and($session->expired)->toBeFalse()
+            ->and($session->livemode)->toBeFalse()
             ->and($session->expiredAt)->toBeNull()
-            ->and($session->createdAt?->getTimestamp())->toBe(1753420800);
+            ->and($session->createdAt?->getTimestamp())->toBe(1753420800)
+            ->and($session->updatedAt?->getTimestamp())->toBe(1753420860)
+            ->and($session->raw)->toBe($payload);
     });
 });
 

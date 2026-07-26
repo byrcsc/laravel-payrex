@@ -1,7 +1,7 @@
 # Contributing
 
-Thanks for helping. This is an unofficial PayRex SDK maintained by one person,
-so a clear, small pull request is worth far more than a large one.
+Thanks for helping. Clear, focused pull requests are easier to review and
+maintain.
 
 ## Getting set up
 
@@ -28,12 +28,12 @@ composer format    # Pint, applies fixes
 
 Two things worth knowing:
 
-- **PHPStan runs at level max with no baseline, and that is not negotiable.**
-  If an error is genuinely a false positive, say so in the pull request and we
-  will work out the right fix. Do not add `@phpstan-ignore`, a baseline
-  entry, or a cast to silence it.
+- **PHPStan runs at level max with no baseline.**
+  If an error is genuinely a false positive, explain it in the pull request so
+  we can find the right fix. Do not add `@phpstan-ignore`, a baseline entry, or
+  a cast only to silence it.
 - **Pint is the only style authority.** Run `composer format` before pushing.
-  Do not hand-format around it or argue with its choices in review.
+  Avoid manual formatting that conflicts with its output.
 
 ## What a good change looks like
 
@@ -65,20 +65,20 @@ Nothing in here is guessed.
 Adding an enum case, event type, or validation rule means citing the doc page
 that supports it in the pull request. Without a citation, it does not go in.
 
-## Things this package deliberately does not do
+## Package scope
 
-If your change touches one of these, explain why in the pull request; these are
-decisions rather than oversights:
+The package does not cover the following. They are deliberate scope and safety
+boundaries, so explain any proposed change to them in the pull request:
 
-- **No automatic retries on mutating requests.** PayRex documents no idempotency
+- **Automatic retries for mutating requests.** PayRex documents no idempotency
   key, so replaying a POST after a timeout could create a duplicate charge.
-- **No client-side validation beyond what PayRex documents outright.** The
+- **Client-side validation beyond documented PayRex rules.** The
   payment intent amount range is checked locally because the docs state it
   unconditionally. Everything else (line-item totals, refund ceilings, account
   eligibility) is server-validated, and the API's 400 is the source of truth.
-- **No config default for currency.** Currency belongs to each request. A global
+- **A global currency default.** Currency belongs to each request. A global
   default could silently mislabel money if PayRex adds more currencies.
-- **No invented event types or enum cases.** Everything shipped in the default
+- **Undocumented event types or enum cases.** Everything shipped in the default
   config maps to a type PayRex documents.
 
 ## Commits and branches
@@ -86,7 +86,7 @@ decisions rather than oversights:
 Branch off `main` as `feat/…`, `fix/…`, `docs/…`, or `chore/…`, and write
 [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`,
 `docs:`, `chore:`). Pull requests are squash-merged, so the pull request title
-becomes the commit message, so make it the one-line changelog entry you would want
+becomes the commit message. Make it the one-line changelog entry you would want
 to read.
 
 Do not edit `CHANGELOG.md` in a pull request. Released sections are written from

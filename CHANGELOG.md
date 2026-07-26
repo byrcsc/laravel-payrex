@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-07-26
+
+First stable release. The API is now covered by semantic versioning: breaking
+changes wait for `2.0.0`.
+
+### Added
+
+- `Customer::$deleted` and `Customer::isDeleted()` for deleted-customer
+  tombstones returned from the retrieve endpoint.
+
+### Changed
+
+- `guzzlehttp/guzzle` is no longer a direct requirement. `illuminate/http`
+  requires it already, so the resolved dependency set is unchanged.
+
+### Removed
+
+- `PaymentMethodType::Billease`, which is not a currently documented PayRex
+  payment method.
+
 ## [0.2.0] - 2026-07-26
 
 Corrections found by exercising the package against a live PayRex test-mode
@@ -71,6 +91,7 @@ Initial release.
 - Artisan commands: `payrex:webhook-test`, `-create`, `-list`, `-update`,
   `-delete`, `-toggle`.
 
-[Unreleased]: https://github.com/byrcsc/laravel-payrex/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/byrcsc/laravel-payrex/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/byrcsc/laravel-payrex/compare/v0.2.0...v1.0.0
 [0.2.0]: https://github.com/byrcsc/laravel-payrex/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/byrcsc/laravel-payrex/releases/tag/v0.1.0

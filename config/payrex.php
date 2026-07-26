@@ -71,7 +71,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | The root of the PayRex API. Override this to point the package at a
-    | sandbox, a proxy, or a local stub during testing.
+    | proxy or local stub during testing.
     |
     */
 

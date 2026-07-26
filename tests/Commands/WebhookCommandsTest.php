@@ -52,7 +52,8 @@ describe('payrex:webhook-list', function () {
 
         $this->artisan('payrex:webhook-list', ['--limit' => 5])->assertSuccessful();
 
-        Http::assertSent(fn (Request $request) => $request->url() === 'https://api.payrexhq.test/webhooks?limit=5');
+        Http::assertSent(fn (Request $request) => $request->method() === 'GET'
+            && $request->url() === 'https://api.payrexhq.test/webhooks?limit=5');
     });
 
     it('walks every page with --all', function () {

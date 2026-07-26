@@ -330,6 +330,7 @@ describe('customer sessions', function () {
             'id' => 'cus_s_1',
             'expired' => false,
             'client_secret' => 'cus_s_secret',
+            'customer_id' => 'cus_1',
             'components' => [
                 ['component' => 'payment_element', 'feature' => 'payment_method_save', 'value' => 'enabled'],
             ],
@@ -339,8 +340,11 @@ describe('customer sessions', function () {
 
         expect($session->expired)->toBeFalse()
             ->and($session->clientSecret)->toBe('cus_s_secret')
+            ->and($session->customerId)->toBe('cus_1')
             ->and($session->components)->toHaveCount(1)
             ->and($session->components[0]['feature'])->toBe('payment_method_save');
+
+        assertCalled('GET', '/customer_sessions/cus_s_1');
     });
 });
 
@@ -448,6 +452,21 @@ describe('billing statements', function () {
         ]);
     });
 
+    it('updates a draft statement with a put', function () {
+        fakePayrex();
+
+        Payrex::billingStatements()->update(
+            'bs_1',
+            description: 'Aug 1 - Sep 1, 2026',
+            dueAt: 1790000000,
+        );
+
+        assertCalled('PUT', '/billing_statements/bs_1', [
+            'description' => 'Aug 1 - Sep 1, 2026',
+            'due_at' => '1790000000',
+        ]);
+    });
+
     it('walks the lifecycle transitions', function (string $method, string $segment) {
         fakePayrex(['id' => 'bs_1', 'status' => 'open']);
 
@@ -502,12 +521,16 @@ describe('billing statements', function () {
             ->and($statement->lineItems)->toHaveCount(1)
             ->and($statement->lineItems[0]->description)->toBe('Basic')
             ->and($statement->lineItems[0]->total())->toBe(30000);
+
+        assertCalled('GET', '/billing_statements/bs_1');
     });
 
     it('lists statements', function () {
         fakePayrex(['data' => [['id' => 'bs_1']], 'has_more' => false]);
 
         expect(Payrex::billingStatements()->list())->toHaveCount(1);
+
+        assertCalled('GET', '/billing_statements');
     });
 
     it('deletes a statement', function () {
@@ -591,6 +614,8 @@ describe('webhook endpoints', function () {
             ->and($endpoint->isEnabled())->toBeTrue()
             ->and($endpoint->secretKey)->toBe('whsk_test_abc')
             ->and($endpoint->events)->toBe(['payment_intent.succeeded']);
+
+        assertCalled('GET', '/webhooks/wh_1');
     });
 
     it('toggles an endpoint', function (string $method) {
@@ -613,6 +638,8 @@ describe('webhook endpoints', function () {
         fakePayrex(['data' => [['id' => 'wh_1']], 'has_more' => false]);
 
         expect(Payrex::webhooks()->list())->toHaveCount(1);
+
+        assertCalled('GET', '/webhooks');
     });
 
     it('deletes an endpoint', function () {
