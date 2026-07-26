@@ -128,7 +128,8 @@ describe('requests', function () {
             paymentMethodId: 'pm_3QxSample000004',
         );
 
-        Http::assertSent(fn (Request $request) => $request->url() === 'https://api.payrexhq.test/payment_intents/pi_3QxSample000001/attach'
+        Http::assertSent(fn (Request $request) => $request->method() === 'POST'
+            && $request->url() === 'https://api.payrexhq.test/payment_intents/pi_3QxSample000001/attach'
             && formBody($request->body()) === [
                 'payment_method_id' => 'pm_3QxSample000004',
             ]);

@@ -341,15 +341,20 @@ describe('CheckoutSession', function () {
 
 describe('CustomerSession', function () {
     it('maps every field', function () {
-        $session = CustomerSession::from(payload('customer_session'));
+        $payload = payload('customer_session');
+        $session = CustomerSession::from($payload);
 
         expect($session->id)->toBe('cuss_3QxSample000007')
             ->and($session->clientSecret)->toBe('cuss_3QxSample000007_secret_ghi789')
+            ->and($session->customerId)->toBe('cus_3QxSample000001')
             ->and($session->customer?->id)->toBe('cus_3QxSample000001')
             ->and($session->components)->toBe([['name' => 'payment_method_list', 'enabled' => true]])
             ->and($session->expired)->toBeFalse()
+            ->and($session->livemode)->toBeFalse()
             ->and($session->expiredAt)->toBeNull()
-            ->and($session->createdAt?->getTimestamp())->toBe(1753420800);
+            ->and($session->createdAt?->getTimestamp())->toBe(1753420800)
+            ->and($session->updatedAt?->getTimestamp())->toBe(1753420860)
+            ->and($session->raw)->toBe($payload);
     });
 });
 
