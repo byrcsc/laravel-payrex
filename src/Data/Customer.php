@@ -22,6 +22,7 @@ final readonly class Customer
         public ?Billing $billing = null,
         public ?string $billingStatementPrefix = null,
         public ?string $nextBillingStatementSequenceNumber = null,
+        public bool $deleted = false,
         public ?bool $livemode = null,
         public array $metadata = [],
         public ?CarbonImmutable $createdAt = null,
@@ -44,11 +45,17 @@ final readonly class Customer
             billing: $billing === null ? null : Billing::from($billing),
             billingStatementPrefix: Payload::nullableString($data, 'billing_statement_prefix'),
             nextBillingStatementSequenceNumber: Payload::nullableString($data, 'next_billing_statement_sequence_number'),
+            deleted: Payload::bool($data, 'deleted'),
             livemode: Payload::nullableBool($data, 'livemode'),
             metadata: Payload::metadata($data),
             createdAt: Payload::dateTime($data, 'created_at'),
             updatedAt: Payload::dateTime($data, 'updated_at'),
             raw: $data,
         );
+    }
+
+    public function isDeleted(): bool
+    {
+        return $this->deleted;
     }
 }

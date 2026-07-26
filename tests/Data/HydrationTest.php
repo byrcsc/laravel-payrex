@@ -95,6 +95,8 @@ describe('Customer', function () {
             ->and($customer->billing?->address?->country)->toBe('PH')
             ->and($customer->billingStatementPrefix)->toBe('ACME')
             ->and($customer->nextBillingStatementSequenceNumber)->toBe('0007')
+            ->and($customer->deleted)->toBeFalse()
+            ->and($customer->isDeleted())->toBeFalse()
             ->and($customer->livemode)->toBeFalse()
             ->and($customer->metadata)->toBe(['user_id' => '42'])
             ->and($customer->createdAt?->getTimestamp())->toBe(1753420800)
@@ -106,6 +108,16 @@ describe('Customer', function () {
             ->toBe('Joe')
             ->and(Customer::from(['id' => 'cus_1', 'billing_details' => ['name' => 'Joe']])->billing)
             ->toBeNull();
+    });
+
+    it('distinguishes a deleted customer returned from retrieve', function () {
+        $customer = Customer::from(payload('customer_deleted'));
+
+        expect($customer->id)->toBe('cus_3QxSampleDeleted001')
+            ->and($customer->deleted)->toBeTrue()
+            ->and($customer->isDeleted())->toBeTrue()
+            ->and($customer->name)->toBeNull()
+            ->and($customer->raw)->toBe(payload('customer_deleted'));
     });
 });
 
@@ -138,6 +150,11 @@ describe('PaymentMethod', function () {
 
         expect($method->type)->toBeNull()
             ->and($method->raw['type'])->toBe('some_future_wallet');
+    });
+
+    it('enumerates only currently documented payment methods', function () {
+        expect(array_map(fn (PaymentMethodType $type): string => $type->value, PaymentMethodType::cases()))
+            ->toBe(['card', 'gcash', 'maya', 'qrph', 'bdo_installment']);
     });
 });
 

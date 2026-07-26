@@ -18,5 +18,4 @@ enum PaymentMethodType: string
     case Maya = 'maya';
     case Qrph = 'qrph';
     case BdoInstallment = 'bdo_installment';
-    case Billease = 'billease';
 }

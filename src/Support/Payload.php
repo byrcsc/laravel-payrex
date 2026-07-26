@@ -105,17 +105,6 @@ final class Payload
     }
 
     /**
-     * @param  array<array-key, mixed>  $data
-     * @return array<array-key, mixed>|null
-     */
-    public static function nullableArray(array $data, string $key): ?array
-    {
-        $value = $data[$key] ?? null;
-
-        return is_array($value) ? $value : null;
-    }
-
-    /**
      * Normalizes any value into a JSON-object-shaped array, or null if it is
      * not one. A JSON list is rejected, since callers want an object here.
      *
