@@ -13,223 +13,97 @@ Built for Laravel projects accepting payments in the Philippines and shared
 with the community, it brings PayRex's documented API into familiar Laravel
 conventions.
 
-Need help using the package? Start a
-[GitHub discussion](https://github.com/byrcsc/laravel-payrex/discussions).
-Found a bug or an API response that is not modelled yet? Open an issue with a
-minimal reproduction or sanitized response. Pull requests are welcome. For
-PayRex account or API questions, contact PayRex directly.
+**[Read the full documentation](https://docs.rcsc.dev/laravel-payrex/)** for
+installation, resources, webhooks, pagination, testing, and security guidance.
 
-| Requires | Versions |
+| Laravel | Supported PHP versions |
 |---|---|
-| PHP | 8.3, 8.4 |
-| Laravel | 12.x, 13.x |
+| 12.x | 8.2, 8.3, 8.4, 8.5 |
+| 13.x | 8.3, 8.4, 8.5 |
 
 ## Installation
+
+Install the package and publish its configuration:
 
 ```bash
 composer require byrcsc/laravel-payrex
 php artisan vendor:publish --tag="payrex-config"
 ```
 
+Add your PayRex test credentials:
+
 ```dotenv
 PAYREX_SECRET_KEY=sk_test_...
-PAYREX_PUBLIC_KEY=pk_test_...      # only for PayRex Elements in the browser
-PAYREX_WEBHOOK_SECRET=whsk_test_...
+PAYREX_PUBLIC_KEY=pk_test_...      # Only needed for PayRex Elements
+PAYREX_WEBHOOK_SECRET=whsk_test_... # Only needed for webhooks
 ```
 
-If you use `HasPayrexCustomer`, publish its migration and review the target
-table before running it. The migration uses `users` by default.
-
-```bash
-php artisan vendor:publish --tag="payrex-migrations"
-php artisan migrate
-```
+See the
+[installation guide](https://docs.rcsc.dev/laravel-payrex/v1/installation) for
+all configuration options and the optional customer migration.
 
 ## Quick start
 
-Use the facade, or inject `PayrexClient`. Both resolve to the same singleton.
+Use the facade or inject `PayrexClient`. Both resolve to the same singleton.
 
 ```php
 use ByRcsc\LaravelPayrex\Facades\Payrex;
 
 $intent = Payrex::paymentIntents()->create(
-    amount: 10_000,          // ₱100.00, smallest currency unit
+    amount: 10_000,
     paymentMethods: ['card', 'gcash'],
-    description: 'Mar 1 - Apr 1, 2026',
+    description: 'Order #RC-1042',
 );
 
-$intent->id;         // "pi_..."
-$intent->status;     // PaymentIntentStatus::AwaitingPaymentMethod
+$intent->id;
+$intent->status;
 $intent->clientSecret;
 ```
 
-Hosted checkout, if you would rather not build a payment form:
+Amounts are integers in the smallest currency unit: `10_000` is ₱100.00. Never
+send a floating-point amount.
 
-```php
-use ByRcsc\LaravelPayrex\Enums\Currency;
+## What is included
 
-$session = Payrex::checkoutSessions()->create(
-    currency: Currency::PHP,
-    paymentMethods: ['card', 'gcash'],
-    lineItems: [
-        // Quantity is the seat count, amount the per-seat price.
-        ['name' => 'Basic, 1 year', 'amount' => 100_000, 'quantity' => 5],
-    ],
-    description: 'Mar 1, 2026 - Mar 1, 2027',
-    successUrl: route('billing.success'),
-    cancelUrl: route('billing.cancel'),
-);
+- Typed resources for payments, checkout, customers, refunds, payouts, billing,
+  and webhook endpoints.
+- Readonly data objects that retain the untouched API payload on `$raw`.
+- Verified webhooks dispatched as generic and type-specific Laravel events.
+- Typed exceptions, response metadata, and conservative retries for `GET`
+  requests.
+- Automatic cursor iteration and Laravel `CursorPaginator` support.
+- An Eloquent customer concern and Artisan commands for managing webhooks.
+- `Http::fake()` support throughout the client.
 
-return redirect()->away($session->url);
-```
+## Important behavior
 
-**Amounts are integers in the smallest unit.** `10_000` is ₱100.00. Never pass a
-float. PayRex supports only `Currency::PHP` today.
+- Mutating requests are never retried. PayRex documents no idempotency keys, so
+  replaying an ambiguous request could duplicate a payment or refund.
+- Queue webhook listeners and deduplicate them using the PayRex event ID.
+  Signature freshness checks do not prevent the same valid event from arriving
+  more than once.
+- PayRex does not expose a subscription resource. Recurring billing must be
+  modelled explicitly, such as with a billing statement for each cycle.
+- Keep `PAYREX_SECRET_KEY` on the server. Only the public key is intended for
+  browser use with PayRex Elements.
 
-**PayRex has no subscription resource,** so nothing here renews on its own. The
-examples above are single payments: an annual plan bought upfront. The
-straightforward way to bill a recurring plan is a billing statement per cycle.
+## Documentation
 
-PayRex also supports storing a payment method with a setup intent: the card goes
-to PayRex and your app keeps only a `pm_...` token, never card details. Charging
-that token unattended is a separate question. Confirm off-session support and
-your recurring-charge consent obligations with PayRex before relying on it.
+- [Installation and setup](https://docs.rcsc.dev/laravel-payrex/v1/installation)
+- [Quick start](https://docs.rcsc.dev/laravel-payrex/v1/quick-start)
+- [Client and resources](https://docs.rcsc.dev/laravel-payrex/v1/client-and-resources)
+- [Receiving webhooks](https://docs.rcsc.dev/laravel-payrex/v1/receiving-webhooks)
+- [Testing](https://docs.rcsc.dev/laravel-payrex/v1/testing)
+- [Security and operations](https://docs.rcsc.dev/laravel-payrex/v1/security-and-operations)
 
-## Resources
+## Support and contributing
 
-Methods take PayRex's documented parameters as named, typed arguments, plus a
-trailing `$options` array merged over them. Null arguments are omitted rather
-than sent empty.
+Ask usage questions in
+[GitHub Discussions](https://github.com/byrcsc/laravel-payrex/discussions).
+For reproducible package bugs, [open an issue](https://github.com/byrcsc/laravel-payrex/issues).
+See [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
 
-```php
-Payrex::paymentIntents()->create(
-    amount: 10_000,
-    paymentMethods: ['card'],
-    options: ['payment_method_options' => ['card' => ['capture_type' => 'manual']]],
-);
-```
-
-| Resource | Methods |
-|---|---|
-| `paymentIntents()` | `create` `retrieve` `update` `cancel` `capture` `attach` |
-| `checkoutSessions()` | `create` `retrieve` `list` `autoPaging` `paginate` `expire` |
-| `setupIntents()` | `create` `retrieve` `cancel` |
-| `customers()` | `create` `retrieve` `update` `delete` `list` `autoPaging` `paginate` `listPaymentMethods` `deletePaymentMethod` |
-| `customerSessions()` | `create` `retrieve` |
-| `payments()` | `retrieve` `update` |
-| `refunds()` | `create` `update` |
-| `payouts()` | `listTransactions` |
-| `billingStatements()` | `create` `retrieve` `update` `delete` `list` `autoPaging` `paginate` `finalize` `send` `void` `markUncollectible` |
-| `billingStatementLineItems()` | `create` `update` `delete` - PayRex has no retrieve route; read line items from the parent statement's `lineItems` |
-| `webhooks()` | `create` `retrieve` `update` `delete` `list` `autoPaging` `paginate` `enable` `disable` |
-
-PayRex can return a deleted customer as an HTTP `200` tombstone instead of a
-`404`. Call `$customer->isDeleted()` after retrieving a customer that may have
-been deleted outside your application.
-
-## Webhooks
-
-The package registers `POST /payrex/webhook`, verifies the signature, and
-dispatches Laravel events. Point a PayRex endpoint there and put its signing
-secret in `PAYREX_WEBHOOK_SECRET`.
-
-Every verified delivery fires `PayrexWebhookReceived`, plus a type-specific
-class when the type is mapped in `config('payrex.webhooks.events')`.
-
-```php
-use ByRcsc\LaravelPayrex\Events\PaymentIntentSucceeded;
-
-class ActivateSeats implements ShouldQueue
-{
-    public function handle(PaymentIntentSucceeded $event): void
-    {
-        $intent = $event->event->paymentIntent();
-
-        Subscription::where('payment_intent_id', $intent->id)->update(['seats_active' => true]);
-    }
-}
-```
-
-Queue your listeners. PayRex retries a failed or slow delivery for up to three
-days with exponential backoff, so **deduplicate on the event ID**: a valid
-delivery can arrive more than once, and the freshness window is not replay
-protection.
-
-## Errors
-
-Every non-2xx response becomes a typed exception. Catch `PayrexException` for
-anything, or a subclass to narrow.
-
-```php
-use ByRcsc\LaravelPayrex\Exceptions\InvalidRequestException;
-use ByRcsc\LaravelPayrex\Exceptions\PayrexException;
-
-try {
-    Payrex::paymentIntents()->create(amount: 1, paymentMethods: ['card']);
-} catch (InvalidRequestException $e) {
-    $e->firstError()?->detail;        // "Amount must be at least ..."
-    $e->errorsFor('amount');          // errors about one parameter
-} catch (PayrexException $e) {
-    report($e);
-}
-```
-
-GET requests retry on connection errors, 429s, and 5xx when `PAYREX_RETRY_TIMES`
-is above 1. **Mutations never retry.** PayRex documents no idempotency keys, so
-replaying a POST after an ambiguous timeout could duplicate a payment or refund.
-
-Payment intent amounts are range-checked locally (₱20 to ₱59,999,999.99) and
-raise `InvalidArgumentException` before any request leaves. Every other amount
-rule is server-side.
-
-## Also included
-
-- `autoPaging()` generators and `paginate()` returning a `CursorPaginator`.
-- `HasPayrexCustomer`, an Eloquent trait making any model a PayRex customer,
-  with a publishable migration.
-- Artisan commands: `payrex:webhook-test`, `-create`, `-list`, `-update`,
-  `-delete`, `-toggle`.
-- `parseEvent()` for verifying webhooks on your own route.
-- `Payrex::publicKey()` for Elements; the secret key has no accessor by design.
-- `lastResponse()` for the status and headers of the most recent call.
-- `Http::fake()` works throughout; override `PAYREX_BASE_URL` for a proxy or
-  local stub.
-- Every DTO keeps its untouched payload on `$raw`, and enums decode with
-  `tryFrom()`, so a value PayRex adds later yields `null` instead of throwing.
-
-## Security
-
-Report vulnerabilities privately, see [SECURITY.md](SECURITY.md). A
-vulnerability in *PayRex itself* goes to PayRex.
-
-- **The secret key is server-side only.** Sent as HTTP Basic auth on every
-  request; never let it reach a browser, bundle, or log. Only `publicKey()` is
-  safe to hand out.
-- **The webhook route intentionally has no CSRF token.** It sits outside the
-  `web` group because a machine-to-machine callback carries no session. The
-  signature check authenticates the request instead.
-- **The webhook route is public until the signature check runs.** Throttle it on
-  a busy host: `'middleware' => ['throttle:60,1']` in `config/payrex.php`.
-- **`webhooks.tolerance` defaults to 300 seconds.** Keep your server clock
-  synchronized with PayRex. Raising the tolerance accepts older signed
-  deliveries; setting it to `0` disables the freshness check. In every case,
-  **deduplicate on the event ID**.
-
-## Testing
-
-The test suite needs no external database, `.env` file, or PayRex account.
-
-```bash
-composer install
-composer test
-composer analyse
-vendor/bin/pint --test
-```
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for setup details, design conventions,
-and pull request guidance.
+Report vulnerabilities privately by following [SECURITY.md](SECURITY.md).
 
 ## Credits
 
@@ -238,7 +112,7 @@ and pull request guidance.
 
 API behavior is referenced against the official
 [PayRex documentation](https://docs.payrex.com/) and
-[`payrex/payrex-php`](https://github.com/payrexhq/payrex-php) SDK (MIT).
+[`payrex/payrex-php`](https://github.com/payrexhq/payrex-php) SDK.
 
 ## License
 
