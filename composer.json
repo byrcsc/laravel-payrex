@@ -22,7 +22,7 @@
         }
     ],
     "require": {
-        "php": "^8.3",
+        "php": "^8.2",
         "ext-json": "*",
         "illuminate/console": "^12.0||^13.0",
         "illuminate/contracts": "^12.0||^13.0",
@@ -36,9 +36,9 @@
         "laravel/pint": "^1.14",
         "nunomaduro/collision": "^8.8",
         "orchestra/testbench": "^10.0||^11.0",
-        "pestphp/pest": "^4.0",
-        "pestphp/pest-plugin-arch": "^4.0",
-        "pestphp/pest-plugin-laravel": "^4.0",
+        "pestphp/pest": "^3.8.3||^4.0",
+        "pestphp/pest-plugin-arch": "^3.1.1||^4.0",
+        "pestphp/pest-plugin-laravel": "^3.2||^4.0",
         "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan-deprecation-rules": "^2.0",
         "phpstan/phpstan-phpunit": "^2.0"
