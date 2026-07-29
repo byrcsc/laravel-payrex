@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-07-29
+
+### Added
+
+- PHP 8.2 and 8.5 support. Laravel 12 is tested on PHP 8.2–8.5, while Laravel
+  13 is tested on PHP 8.3–8.5.
+- Dependency testing against both the lowest and stable supported versions.
+
+### Changed
+
+- Updated the README with a link to the full documentation.
+
 ## [1.0.0] - 2026-07-26
 
 First stable release. The API is now covered by semantic versioning: breaking
@@ -91,7 +103,8 @@ Initial release.
 - Artisan commands: `payrex:webhook-test`, `-create`, `-list`, `-update`,
   `-delete`, `-toggle`.
 
-[Unreleased]: https://github.com/byrcsc/laravel-payrex/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/byrcsc/laravel-payrex/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/byrcsc/laravel-payrex/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/byrcsc/laravel-payrex/compare/v0.2.0...v1.0.0
 [0.2.0]: https://github.com/byrcsc/laravel-payrex/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/byrcsc/laravel-payrex/releases/tag/v0.1.0
